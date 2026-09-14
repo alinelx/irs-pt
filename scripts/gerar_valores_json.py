@@ -41,11 +41,6 @@ def eur(celula: str) -> float | None:
     return float(m.group(1).replace(".", "") + "." + (m.group(2) or "0"))
 
 
-def percentagem(texto: str, rotulo: str) -> float | None:
-    m = re.search(rf"{rotulo}[^\d]{{0,40}}?(\d{{1,3}})(?:,(\d+))?\s*%", texto)
-    return float(f"{m.group(1)}.{m.group(2) or '0'}") if m else None
-
-
 def extrair(md: str) -> dict:
     anos: dict[str, dict] = {}
     for m in LINHA_ANO.finditer(md):
@@ -66,7 +61,8 @@ def extrair(md: str) -> dict:
         "coeficiente_regra_15pct": 0.15,
         "afetacao_parcial": 0.25,
         "regime_simplificado_limite": eur("200.000 €") if "200.000" in md else 200000.0,
-        "ss_taxa_trabalhador_independente": percentagem(md, "taxa"),
+        "ss_taxa_independente": 0.214,        # prestação de serviços / profissionais livres
+        "ss_taxa_eni_comercial": 0.252,       # ENI comercial e industrial, titulares de EIRL
         "ss_base_servicos": 0.70,
         "ss_base_vendas": 0.20,
     }

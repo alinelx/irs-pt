@@ -33,16 +33,17 @@
       "iva_art53_limite": 15000.0,
       "iva_saida_imediata": 18750.0,
       "ss_isencao_acumulacao_mensal": 2148.52,
-      "estado": "confirmado por fonte secundária (Montepio, mar 2026); DR/OE a confirmar. IAS pela Portaria n.º 480-A/2025/1",
+      "estado": "confirmado — IAS: Portaria n.º 480-A/2025/1 (citada no Guia ISS 1009 v1.09, 12/01/2026); fórmula 8,54×IAS: art. 25.º redação Lei n.º 45-A/2024 ainda em vigor no Portal das Finanças (set. 2026)",
       "confirmado": true,
-      "reservas": true
+      "reservas": false
     }
   },
   "estruturais": {
     "coeficiente_regra_15pct": 0.15,
     "afetacao_parcial": 0.25,
     "regime_simplificado_limite": 200000.0,
-    "ss_taxa_trabalhador_independente": 21.4,
+    "ss_taxa_independente": 0.214,
+    "ss_taxa_eni_comercial": 0.252,
     "ss_base_servicos": 0.7,
     "ss_base_vendas": 0.2
   }

@@ -195,10 +195,12 @@ class TestValoresDeReferencia(unittest.TestCase):
         self.assertIn("Lei n.º 45-A/2024", self.texto)
         self.assertIn("irs25.aspx", self.texto)
 
-    def test_2026_confirmado_por_fonte_secundaria(self):
+    def test_2026_confirmado_com_fonte_oficial(self):
+        """Passou de fonte secundária a confirmado: portaria do IAS + redação em vigor."""
         estado = self._linha(2026)[6].lower()
-        self.assertIn("fonte secundária", estado)
-        self.assertIn("a confirmar", estado)
+        self.assertTrue(estado.startswith("confirmado"), estado)
+        self.assertIn("480-a/2025", estado, "falta a portaria do IAS que sustenta o valor")
+        self.assertNotIn("a confirmar", estado)
 
 
 class TestSentinela(unittest.TestCase):
@@ -212,33 +214,43 @@ class TestSentinela(unittest.TestCase):
     def test_issue_antes_da_baseline(self):
         """Se a baseline for publicada primeiro e a issue falhar, a mudança perde-se."""
         passos = re.findall(r"- name: (.+)", self.yml)
-        self.assertLess(passos.index("Abrir issue se houver alerta"),
-                        passos.index("Guardar snapshots atualizados"))
+        self.assertLess(next(i for i, n in enumerate(passos) if "issue" in n.lower()),
+                        next(i for i, n in enumerate(passos) if "guardar" in n.lower()))
 
     def test_etiqueta_criada_antes_de_ser_usada(self):
+        """Sem a etiqueta, o gh recusa criar a issue e o alerta perde-se (run #1 e #2)."""
         self.assertIn("gh label create sentinela", self.yml)
         self.assertLess(self.yml.index("gh label create sentinela"), self.yml.index("gh issue create"))
 
-    def test_todas_as_fontes_tem_marcador(self):
+    def test_pdf_vigiado_por_hash(self):
+        vigiar = (RAIZ / "sentinela/vigiar.py").read_text(encoding="utf-8")
+        self.assertIn("sha256", vigiar)
+        self.assertIn("pdf", vigiar.lower())
+
+    def test_fontes_html_tem_marcador(self):
+        """PDFs são vigiados por hash; as páginas HTML precisam de marcador de conteúdo."""
         for f in self.fontes:
+            if f["url"].lower().endswith(".pdf"):
+                continue
             self.assertTrue(f.get("marcador"), f"{f['id']} sem marcador de conteúdo")
 
-    def test_urls_confirmadas_no_run3(self):
-        """Verificadas empiricamente: a variante sem hífen é a que responde."""
+    def test_treze_fontes_incluindo_o_pdf(self):
+        """12 páginas HTML + o Guia Prático ISS 1009 em PDF."""
+        self.assertEqual(len(self.fontes), 13)
+        pdfs = [f for f in self.fontes if f["url"].lower().endswith(".pdf")]
+        self.assertEqual(len(pdfs), 1, "esperava exatamente uma fonte em PDF")
+        self.assertIn("1009", pdfs[0]["url"], "o PDF devia ser o Guia ISS 1009")
+
+    def test_urls_sem_hifen_nos_artigos_b(self):
+        """Confirmado no run #3: irs78-b.aspx e irs101-b.aspx dão 404; sem hífen respondem."""
         por_id = {f["id"]: f for f in self.fontes}
         for fid in ("cirs-art78b-despesas-gerais", "cirs-art101b-dispensa"):
-            f = por_id[fid]
-            self.assertRegex(f["url"], r"irs(78|101)b\.aspx$", f"{fid} devia usar a URL sem hífen")
-            self.assertIn("verificado", f, f"{fid} sem marca de verificação")
-            self.assertNotIn("alternativas", f, f"{fid} já está resolvida; não precisa de alternativas")
+            self.assertRegex(por_id[fid]["url"], r"irs(78|101)b\.aspx$", fid)
 
-    def test_fontes_por_resolver_registam_o_que_ja_se_tentou(self):
-        """Para não se repetir trabalho: quem ainda falha diz o que já foi tentado."""
-        por_resolver = {"civa-art53-isencao", "cirs-art151-tabela",
-                        "ss-trabalhadores-independentes", "efatura-faq-atividade"}
-        por_id = {f["id"]: f for f in self.fontes}
-        for fid in por_resolver:
-            self.assertTrue(por_id[fid].get("_tentado"), f"{fid} sem registo do que já foi tentado")
+    def test_tabela_do_151_vigiada_na_portaria(self):
+        """A página do art. 151.º não traz a tabela; ela vive na portaria."""
+        ids = {f["id"] for f in self.fontes}
+        self.assertIn("portaria-1011-2001-tabela-151", ids)
 
     def test_ids_unicos(self):
         ids = [f["id"] for f in self.fontes]
@@ -305,10 +317,24 @@ class TestValoresJSON(unittest.TestCase):
                                    delta=1.0, msg=f"limiar de {ano} não bate com dedução ÷ 0,15")
 
     def test_reservas_sinalizadas_para_a_app(self):
-        """A app tem de conseguir distinguir 'confirmado' de 'confirmado com reservas'."""
-        self.assertFalse(self.dados["anos"]["2025"]["reservas"])
-        self.assertTrue(self.dados["anos"]["2026"]["reservas"],
-                        "2026 ainda diz 'a confirmar' no markdown mas o JSON não o sinaliza")
+        """A app tem de distinguir 'confirmado' de 'confirmado com ressalva'.
+
+        Testa o mecanismo, não o ano: hoje nenhum ano tem ressalvas, mas o próximo
+        que ficar pendente tem de ser sinalizado sem se mexer no código.
+        """
+        for ano, v in self.dados["anos"].items():
+            self.assertIn("reservas", v, ano)
+            self.assertEqual(v["reservas"], "a confirmar" in v["estado"].lower(), ano)
+
+        sys.path.insert(0, str(RAIZ / "scripts"))
+        import gerar_valores_json as ger
+        sintetico = ("| Ano dos rendimentos | IAS | Dedução | Limiar | IVA | Saída | SS | Estado |\n"
+                     "|---|---|---|---|---|---|---|---|\n"
+                     "| 2027 | 550,00 € | 4.697,00 € | ~31.313 € | 15.000 € | 18.750 € | 2.200,00 € | "
+                     "confirmado por fonte secundária; DR/OE a confirmar |\n")
+        ano2027 = ger.extrair(sintetico)["anos"]["2027"]
+        self.assertTrue(ano2027["confirmado"])
+        self.assertTrue(ano2027["reservas"], "'a confirmar' no estado tem de levantar a ressalva")
 
     def test_json_marcado_como_derivado(self):
         self.assertIn("gerar_valores_json", self.dados["_gerado_por"])

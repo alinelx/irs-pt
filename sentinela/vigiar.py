@@ -35,33 +35,27 @@ def extrair(html):
 def buscar(url):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "pt-PT,pt;q=0.9"})
     with urllib.request.urlopen(req, timeout=40) as r:
-        raw = r.read()
+        raw = r.read(); ctype = r.headers.get("Content-Type", "")
+    if "pdf" in ctype.lower() or url.lower().endswith(".pdf"):
+        return f"[PDF] {len(raw)} bytes sha256={hashlib.sha256(raw).hexdigest()}"
     for enc in ("utf-8", "cp1252", "latin-1"):
         try: return raw.decode(enc)
         except UnicodeDecodeError: continue
     return raw.decode("utf-8", "replace")
 
-def obter(f):
-    """Tenta a URL principal e as alternativas. Devolve (texto, url_usada) ou levanta a última falha.
+def recortar(txt, inicio):
+    """Corta o chrome do portal: o texto passa a contar a partir da primeira linha que casa com `inicio`."""
+    if not inicio: return txt
+    m = re.search(r"^.*" + inicio + r".*$", txt, re.M)
+    return txt[m.start():] if m else txt
 
-    O marcador é texto que TEM de aparecer na página. Uma página que responde 200 mas só
-    traz o aviso de cookies não passa — foi assim que a Segurança Social escapou à guarda
-    do tamanho mínimo na primeira execução.
-    """
-    marcador = (f.get("marcador") or "").lower()
-    erros = []
-    for url in [f["url"], *f.get("alternativas", [])]:
-        try:
-            txt = extrair(buscar(url))
-        except Exception as e:
-            erros.append(f"{url} -> {type(e).__name__}: {e}"); continue
-        if len(txt) < 200:
-            erros.append(f"{url} -> quase vazia ({len(txt)} chars)"); continue
-        if marcador and marcador not in txt.lower():
-            erros.append(f"{url} -> sem o marcador {marcador!r} ({len(txt)} chars) — página errada ou só chrome")
-            continue
-        return txt, url
-    raise LookupError(" | ".join(erros))
+def validar(f, txt):
+    """Devolve motivo de falha, ou None. Uma página que responde 200 mas não tem o conteúdo esperado é falha, não ok."""
+    if txt.startswith("[PDF]"): return None
+    if len(txt) < 1500: return f"página curta ({len(txt)} chars): chrome/cookies/JS-only?"
+    marc = f.get("marcador")
+    if marc and marc not in txt: return f"marcador '{marc}' ausente — conteúdo esperado não veio"
+    return None
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--init", action="store_true"); a = ap.parse_args()
@@ -69,13 +63,15 @@ def main():
     SNAP.mkdir(exist_ok=True)
     mudancas, falhas, novas = [], [], []
     for f in fontes:
-        fid = f["id"]
+        fid, url = f["id"], f["url"]
         try:
-            novo, usada = obter(f)
-        except LookupError as e:
+            bruto = buscar(url)
+            novo = bruto if bruto.startswith("[PDF]") else recortar(extrair(bruto), f.get("inicio"))
+        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as e:
             falhas.append((f, str(e))); continue
-        if usada != f["url"]:
-            print(f"  NOTA {fid}: a URL principal falhou; funcionou a alternativa {usada}")
+        motivo = validar(f, novo)
+        if motivo:
+            falhas.append((f, motivo)); continue
         p = SNAP / f"{fid}.txt"
         if not p.exists():
             p.write_text(novo, encoding="utf-8"); novas.append(f); continue
@@ -98,7 +94,7 @@ def main():
         linhas += ["**Ação humana:** ler o diff, decidir se afeta `skills/irs-pt/references/*.md`, atualizar e correr os testes. "
                    "A sentinela não altera a skill.", ""]
     if falhas:
-        linhas.append(f"## {len(falhas)} fonte(s) inacessíveis ou sem o marcador esperado\n")
+        linhas.append(f"## {len(falhas)} fonte(s) inacessíveis\n")
         for f, e in falhas: linhas.append(f"- `{f['id']}` — {f['url']} — {e}")
         linhas += ["", "Se persistir, a URL mudou ou o site passou a bloquear: atualizar `sentinela/fontes.json`.", ""]
     (AQUI / "ALERTA.md").write_text("\n".join(linhas), encoding="utf-8")
