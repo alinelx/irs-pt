@@ -1,8 +1,8 @@
 # ADR-001: Direção da geração entre `valores-anuais.md` e `valores-anuais.json`
 
 **Data:** 2026-09-14
-**Estado:** **Proposto** — aguarda decisão de @alinelx
-**Decide:** @alinelx
+**Estado:** **Aceite** (14/09/2026)
+**Decidido por:** @alinelx
 **Consultado:** `CLAUDE.md` (repo e proposta vinda do Claude Design), suite de 51 testes
 
 ---
@@ -37,7 +37,7 @@ neste momento assinalada em `CLAUDE.md § Decisão em aberto`.
 
 ---
 
-## Decisão proposta
+## Decisão
 
 **Manter o markdown canónico**, com `scripts/gerar_valores_json.py` a derivar o JSON.
 
@@ -131,12 +131,15 @@ automáticas, terá de propor edições de markdown e não um patch estruturado.
 
 ## Implementação
 
-**Se for a Opção 1 (proposta):** nada a mudar. Uma melhoria opcional — correr
-`gerar_valores_json.py --check` em CI, para o markdown e o JSON não poderem divergir num push.
+Nada a mudar no código: a Opção 1 é o que já está implementado.
 
-**Se for a Opção 2:** inverter `gerar_valores_json.py`, decidir como a prosa sobrevive (secção
-solta no markdown? campo `notas` por ano?), reescrever `TestValoresJSON`, e corrigir o
-`CLAUDE.md` do repo em vez da proposta.
+**Por fazer:** correr `gerar_valores_json.py --check` em CI, para o markdown e o JSON não
+poderem divergir num push. É a mitigação do risco de parsing aceite acima, e a única ação
+que esta decisão gera.
+
+A Opção 2, se algum dia for reconsiderada, implica inverter `gerar_valores_json.py`, decidir
+como a prosa sobrevive (secção solta no markdown? campo `notas` por ano?), reescrever
+`TestValoresJSON` e corrigir o `CLAUDE.md` do repo em vez da proposta.
 
 ---
 
