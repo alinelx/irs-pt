@@ -223,12 +223,22 @@ class TestSentinela(unittest.TestCase):
         for f in self.fontes:
             self.assertTrue(f.get("marcador"), f"{f['id']} sem marcador de conteúdo")
 
-    def test_fontes_que_falharam_tem_alternativas(self):
-        falharam = {"cirs-art78b-despesas-gerais", "cirs-art101b-dispensa",
-                    "civa-art53-isencao", "efatura-faq-atividade"}
-        for f in self.fontes:
-            if f["id"] in falharam:
-                self.assertTrue(f.get("alternativas"), f"{f['id']} sem URLs alternativas")
+    def test_urls_confirmadas_no_run3(self):
+        """Verificadas empiricamente: a variante sem hífen é a que responde."""
+        por_id = {f["id"]: f for f in self.fontes}
+        for fid in ("cirs-art78b-despesas-gerais", "cirs-art101b-dispensa"):
+            f = por_id[fid]
+            self.assertRegex(f["url"], r"irs(78|101)b\.aspx$", f"{fid} devia usar a URL sem hífen")
+            self.assertIn("verificado", f, f"{fid} sem marca de verificação")
+            self.assertNotIn("alternativas", f, f"{fid} já está resolvida; não precisa de alternativas")
+
+    def test_fontes_por_resolver_registam_o_que_ja_se_tentou(self):
+        """Para não se repetir trabalho: quem ainda falha diz o que já foi tentado."""
+        por_resolver = {"civa-art53-isencao", "cirs-art151-tabela",
+                        "ss-trabalhadores-independentes", "efatura-faq-atividade"}
+        por_id = {f["id"]: f for f in self.fontes}
+        for fid in por_resolver:
+            self.assertTrue(por_id[fid].get("_tentado"), f"{fid} sem registo do que já foi tentado")
 
     def test_ids_unicos(self):
         ids = [f["id"] for f in self.fontes]

@@ -33,13 +33,10 @@
     },
     {
       "id": "cirs-art78b-despesas-gerais",
-      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78-b.aspx",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78b.aspx",
       "porque": "Despesas gerais familiares e prazo de reclamação de faturas",
       "marcador": "familiares",
-      "alternativas": [
-        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78b.aspx",
-        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78-B.aspx"
-      ]
+      "verificado": "run #3, 2026-09-14"
     },
     {
       "id": "cirs-art101-retencao",
@@ -49,19 +46,17 @@
     },
     {
       "id": "cirs-art101b-dispensa",
-      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101-b.aspx",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101b.aspx",
       "porque": "Dispensa de retenção (limite 15.000 €)",
       "marcador": "dispensa",
-      "alternativas": [
-        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101b.aspx",
-        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101-B.aspx"
-      ]
+      "verificado": "run #3, 2026-09-14"
     },
     {
       "id": "cirs-art151-tabela",
       "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs151.aspx",
       "porque": "Tabela de atividades a 0,75",
-      "marcador": "Arquitetos"
+      "marcador": "Arquitetos",
+      "_tentado": "run #3: a página responde mas não traz a tabela (746 chars, sem 'Arquitetos') — provavelmente noutra página ou em portaria anexa."
     },
     {
       "id": "civa-art53-isencao",
@@ -71,13 +66,15 @@
       "alternativas": [
         "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/civa_rep/Pages/civa53.aspx",
         "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/iva_rep/Pages/iva53.aspx"
-      ]
+      ],
+      "_tentado": "run #3: civa_rep/iva53, civa_rep/civa53 e iva_rep/iva53 dão todas 404. Falta a URL real."
     },
     {
       "id": "ss-trabalhadores-independentes",
       "url": "https://www.seg-social.pt/trabalhadores-independentes",
       "porque": "Taxa, base de incidência, isenção por acumulação (4×IAS)",
-      "marcador": "independentes"
+      "marcador": "independentes",
+      "_tentado": "run #3: 213 chars, só aviso de cookies — renderizada por JS. Usar o PDF do Guia Prático ISS 1009."
     },
     {
       "id": "efatura-faq-atividade",
@@ -87,7 +84,8 @@
       "alternativas": [
         "https://faturas.portaldasfinancas.gov.pt/json/faq.action",
         "https://info.portaldasfinancas.gov.pt/pt/faturas/Pages/default.aspx"
-      ]
+      ],
+      "_tentado": "run #3: faq.action 74 chars, json/faq.action HTTP 500, pt/faturas 196 chars. Falta a URL real."
     }
   ]
 }
