@@ -1,0 +1,50 @@
+{
+  "_gerado_por": "scripts/gerar_valores_json.py",
+  "_fonte": "skills/irs-pt/references/valores-anuais.md",
+  "_aviso": "Ficheiro derivado. Não editar à mão — editar o markdown e regerar.",
+  "schema": 1,
+  "anos": {
+    "2024": {
+      "ias": 509.26,
+      "deducao_especifica": 4350.24,
+      "limiar_justificacao": 29002.0,
+      "iva_art53_limite": 14500.0,
+      "iva_saida_imediata": 18125.0,
+      "ss_isencao_acumulacao_mensal": 2037.04,
+      "estado": "confirmado (AT, IRS 2024)",
+      "confirmado": true,
+      "reservas": false
+    },
+    "2025": {
+      "ias": 522.5,
+      "deducao_especifica": 4462.15,
+      "limiar_justificacao": 29748.0,
+      "iva_art53_limite": 15000.0,
+      "iva_saida_imediata": 18750.0,
+      "ss_isencao_acumulacao_mensal": 2090.0,
+      "estado": "confirmado (IRS entregue abr–jun 2026)",
+      "confirmado": true,
+      "reservas": false
+    },
+    "2026": {
+      "ias": 537.13,
+      "deducao_especifica": 4587.09,
+      "limiar_justificacao": 30580.0,
+      "iva_art53_limite": 15000.0,
+      "iva_saida_imediata": 18750.0,
+      "ss_isencao_acumulacao_mensal": 2148.52,
+      "estado": "confirmado — IAS: Portaria n.º 480-A/2025/1 (citada no Guia ISS 1009 v1.09, 12/01/2026); fórmula 8,54×IAS: art. 25.º redação Lei n.º 45-A/2024 ainda em vigor no Portal das Finanças (set. 2026)",
+      "confirmado": true,
+      "reservas": false
+    }
+  },
+  "estruturais": {
+    "coeficiente_regra_15pct": 0.15,
+    "afetacao_parcial": 0.25,
+    "regime_simplificado_limite": 200000.0,
+    "ss_taxa_independente": 0.214,
+    "ss_taxa_eni_comercial": 0.252,
+    "ss_base_servicos": 0.7,
+    "ss_base_vendas": 0.2
+  }
+}
