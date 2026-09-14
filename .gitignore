@@ -1,0 +1,17 @@
+# NUNCA commitar dados do e-Fatura ou ficheiros fiscais pessoais.
+*.csv
+*.xlsx
+*.xls
+*.pdf
+*.json.gz
+
+# Exceção: o CSV sintético de exemplo (dados fictícios).
+!skills/irs-pt/scripts/exemplo-efatura.csv
+
+# Output do parser
+resumo-*.json
+saida/
+__pycache__/
+*.pyc
+.DS_Store
+.venv/

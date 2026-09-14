@@ -1,0 +1,20 @@
+{
+  "name": "irs-pt",
+  "owner": {
+    "name": "alinelx",
+    "url": "https://github.com/alinelx"
+  },
+  "metadata": {
+    "description": "Ferramentas de apoio ao IRS português.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "irs-pt",
+      "source": "./",
+      "description": "Apoio à declaração de IRS em Portugal para Categoria B em regime simplificado: limiar de despesas do artigo 31.º, leitura do e-Fatura e valores anuais verificados.",
+      "version": "0.1.0",
+      "category": "productivity"
+    }
+  ]
+}

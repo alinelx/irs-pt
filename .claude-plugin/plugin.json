@@ -1,0 +1,12 @@
+{
+  "name": "irs-pt",
+  "description": "Assistente de IRS português para trabalhadores independentes (Categoria B, regime simplificado): calcula o limiar de despesas do artigo 31.º antes de olhar para faturas e agrega exportações do e-Fatura.",
+  "version": "0.1.0",
+  "author": {
+    "name": "alinelx"
+  },
+  "homepage": "https://github.com/alinelx/irs-pt",
+  "repository": "https://github.com/alinelx/irs-pt",
+  "license": "MIT",
+  "keywords": ["irs", "portugal", "fiscal", "e-fatura", "categoria-b", "recibos-verdes"]
+}

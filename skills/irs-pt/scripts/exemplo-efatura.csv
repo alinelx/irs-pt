@@ -1,0 +1,13 @@
+Data Emissão;NIF Emitente;Nome Emitente;Tipo;Setor de Atividade;Situação;Base Tributável;Valor IVA;Valor Total
+15-01-2025;500000001;Livraria Exemplo Lda;Fatura;Outros bens e serviços;Registada;40,65;9,35;50,00
+03-02-2025;500000002;Contabilidade Exemplo Unip Lda;Fatura-Recibo;Serviços profissionais;Registada;100,00;23,00;123,00
+27-02-2025;500000003;Telecom Exemplo SA;Fatura;Comunicações;Registada;35,77;8,23;44,00
+14-03-2025;500000004;Papelaria Exemplo;Fatura Simplificada;Outros bens e serviços;Pendente;12,20;2,80;15,00
+02-04-2025;500000003;Telecom Exemplo SA;Nota de Crédito;Comunicações;Registada;35,77;8,23;44,00
+30-04-2025;500000005;Energia Exemplo SA;Fatura;Eletricidade;Registada;1.016,26;233,74;1.250,00
+19-05-2025;500000006;Formação Exemplo Lda;Fatura;Educação;Falta informação;300,00;0,00;300,00
+08-06-2025;500000007;Oficina Exemplo Lda;Fatura;Reparação de veículos automóveis;Registada;162,60;37,40;200,00
+21-07-2025;500000008;Restaurante Exemplo;Fatura Simplificada;Restauração e alojamento;Registada;30,00;3,90;33,90
+11-09-2025;500000009;Seguros Exemplo SA;Fatura;Seguros;Registada;450,00;0,00;450,00
+05-11-2025;500000001;Livraria Exemplo Lda;Fatura;Outros bens e serviços;Anulada;20,33;4,67;25,00
+22-12-2024;500000002;Contabilidade Exemplo Unip Lda;Fatura;Serviços profissionais;Registada;100,00;23,00;123,00
