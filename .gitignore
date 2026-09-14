@@ -1,0 +1,9 @@
+# Dados pessoais — nunca commitar
+*.csv
+*.xls
+*.xlsx
+dados/
+work/
+output/
+__pycache__/
+.DS_Store

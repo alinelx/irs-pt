@@ -1,0 +1,10 @@
+{
+  "name": "irs-pt",
+  "version": "0.1.0",
+  "description": "Assistente de IRS e e-Fatura para ENI em regime simplificado (Portugal). Não submete nada no Portal das Finanças: explica, calcula e recomenda.",
+  "author": { "name": "alinelx", "url": "https://github.com/alinelx" },
+  "homepage": "https://github.com/alinelx/irs-pt",
+  "repository": "https://github.com/alinelx/irs-pt",
+  "license": "MIT",
+  "keywords": ["irs", "portugal", "e-fatura", "anexo-b", "regime-simplificado"]
+}

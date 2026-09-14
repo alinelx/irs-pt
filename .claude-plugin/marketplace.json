@@ -1,0 +1,16 @@
+{
+  "name": "irs-pt",
+  "owner": { "name": "alinelx", "url": "https://github.com/alinelx" },
+  "metadata": {
+    "description": "Marketplace do plugin irs-pt: assistente de IRS e e-Fatura para trabalhadores independentes em Portugal (regime simplificado)."
+  },
+  "plugins": [
+    {
+      "name": "irs-pt",
+      "source": "./",
+      "description": "Decide, fatura a fatura, se vale a pena afetar despesas à atividade no e-Fatura e prepara o Anexo B. Regime simplificado, atividades mistas, acumulação com Cat. A.",
+      "category": "finance",
+      "keywords": ["irs", "portugal", "e-fatura", "anexo-b", "regime-simplificado", "recibos-verdes", "eni"]
+    }
+  ]
+}
