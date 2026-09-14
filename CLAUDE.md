@@ -13,6 +13,8 @@ Skill/plugin open source que ajuda trabalhadores independentes em Portugal (regi
 | Regras do e-Fatura e regra de decisão por fatura | `skills/irs-pt/references/efatura.md` | humano |
 | Fluxo de 5 passos | `skills/irs-pt/SKILL.md` | humano |
 | Fontes vigiadas | `sentinela/fontes.json` | humano |
+| Valores legíveis por máquina (app) | `skills/irs-pt/references/valores-anuais.json` | **gerado** por `scripts/gerar_valores_json.py` |
+| Design da app mobile | `app/` | importado do Claude Design |
 
 Nenhuma outra superfície (app, testes, README) pode ter valores fiscais próprios. Tudo lê daqui. Se a app mobile precisar de dados legíveis por máquina, gera-se `valores-anuais.json` **a partir** do markdown e um teste garante que são iguais.
 
@@ -29,6 +31,43 @@ Nenhuma outra superfície (app, testes, README) pode ter valores fiscais própri
 - **Chat claude.ai (internet aberta):** verificação de fontes oficiais (Portal das Finanças, DR, ISS), decisões de produto, redação de referências. O sandbox do Claude Code **não chega** a portaldasfinancas.gov.pt nem ao DR (403 no CONNECT) — não tentar lá.
 - **Claude Code (repo local/cloud):** testes (`skills/irs-pt/scripts/test_parse_efatura.py`), instalação do plugin (`claude plugin validate .` → `marketplace add ./` **com barra** → `install irs-pt@irs-pt`), commits, sentinela. Correr a suite antes de cada commit; mutação deliberada quando se tocam nas referências.
 - **Claude Design (app mobile):** interface didática sobre a MESMA lógica — Passo 1 (situação), Passo 2 (o número que decide), Passo 3-4 (faturas + preview), Passo 5 (próxima ação + prazos). A app é uma *vista* das referências, não uma segunda implementação das regras. Sem login, sem envio de dados, sem "submeter".
+
+## App mobile
+
+Design em `app/` (tela do Claude Design, 8 ecrãs). **A app é uma *vista* das regras que já
+estão em `references/`** — não duplica fórmulas nem tabelas: lê
+`skills/irs-pt/references/valores-anuais.json`, aplica as fórmulas descritas em `fiscal.md`
+e mostra a conta. Se uma regra muda, muda no repo, nunca no código da UI.
+
+### Ecrãs = os 5 passos do SKILL.md
+1. **Situação** — atividades e coeficiente, rendimento esperado por atividade, Cat. A / IVA. Uma pergunta de cada vez.
+2. **O número que decide tudo** — *ecrã central*: «o teu rendimento de serviços é X; o limiar deste ano é Y; logo as faturas [interessam / não interessam]». Tudo o resto é secundário a este ecrã.
+3. **Faturas** — importar o CSV do e-Fatura e propor classificação fatura a fatura.
+4. **Preview e confirmação** — resumo antes de qualquer lista de cliques no portal.
+5. **Próxima ação e calendário** — uma única ação concreta, depois os prazos do ano.
+
+### Regras de UI
+- **Mostra sempre a conta.** Nenhum valor aparece sem a matemática que o justifica («15% × 12.400 € = 1.860 €, abaixo dos 4.462,15 € automáticos»). O utilizador pode colapsar para «só o número», nunca o contrário por omissão.
+- **A incerteza é visível.** Anos com `reservas: true` no JSON aparecem marcados, com o ano e a razão. Nunca apresentar 2026 como se fosse 2025.
+- **Confirmação antes de listar cliques no portal** (passo 4). Sem «sim», não se detalha onde clicar.
+- **Dados ficam locais.** O CSV do e-Fatura nunca sai do dispositivo. Sem conta, sem sincronização.
+- **Módulos personalizáveis:** IVA, Segurança Social e Cat. A ligam/desligam no perfil. Quem é isento não vê IVA.
+- **Linguagem:** PT por omissão, EN à distância de um toque. Tom morno, sem jargão por omissão; cada termo explicável em uma frase.
+- **Literacia antes da decisão:** aula de 1 minuto antes do primeiro ecrã de triagem, não glossário escondido.
+
+### O que a app nunca faz
+- Autenticar no Portal das Finanças ou no e-Fatura (não há API pública; scraping quebra e exige credenciais).
+- Submeter, alterar ou classificar seja o que for em nome do utilizador.
+- Enviar faturas, NIF ou rendimentos para um servidor.
+- Apresentar um valor de imposto como definitivo — a liquidação é da AT.
+- Substituir contabilista certificado.
+
+### Decisão em aberto: direção da geração
+A proposta de `CLAUDE.md` que veio do design queria o **JSON canónico** e o markdown gerado
+a partir dele. O repo faz o **inverso** — markdown canónico, `gerar_valores_json.py` deriva o
+JSON — porque é o markdown que carrega as notas, as fontes e as ressalvas que um humano edita
+e verifica. Fica assim até haver decisão em contrário; inverter implica mexer no gerador e nos
+testes de divergência.
 
 ## Estado (14/09/2026)
 - v0.1.0 instalada e exercitada; 35 testes, verificados por mutação.
