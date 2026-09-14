@@ -28,6 +28,12 @@ A skill faz essa conta primeiro e só depois fala de faturas. Lida com atividade
 /plugin install irs-pt@irs-pt
 ```
 
+A partir de um clone local, a barra é obrigatória — `add .` falha com *"Invalid marketplace source format"*:
+```
+/plugin marketplace add ./
+/plugin install irs-pt@irs-pt
+```
+
 **Claude Desktop / claude.ai** — `+` → Plugins → adicionar marketplace a partir do repositório `alinelx/irs-pt`. Requer Skills e code execution ativos. Alternativa: zipar `skills/irs-pt/` e carregar em Settings → Capabilities → Skills → Upload skill.
 
 **Outros agentes (Cursor, Codex, Copilot, Gemini CLI…)**

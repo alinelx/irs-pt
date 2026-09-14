@@ -10,7 +10,10 @@ Valores numéricos → `valores-anuais.md`. Aqui só a mecânica. Artigos refere
 | Prestações de serviços das atividades da tabela do art. 151.º (Portaria n.º 1011/2001; ex.: 1336 Designers, 1332 Programadores, 1320 Consultores, 1334 Tradutores) | 0,75 | 403 | Sim |
 | Outras prestações de serviços (ex.: estafeta/entregas, serviços não listados) | 0,35 | 404 | Sim |
 | Propriedade intelectual/industrial, mineração de criptoativos | 0,95 | — | Não |
+| Subsídios/subvenções **não** destinados à exploração (al. e) | 0,30 | — | Não |
+| Subsídios à exploração e restantes rendimentos da Cat. B (al. f) | 0,10 | — | Não |
 
+- Coeficientes confirmados em fonte: OCC e [art. 31.º do CIRS](https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs31.aspx), Portal das Finanças.
 - Circular n.º 5/2014 da AT: o 0,75 aplica-se a serviços de atividades da tabela do 151.º **mesmo que** o sujeito esteja coletado por CAE, se o serviço corresponder a uma atividade lá prevista.
 - **Atividades mistas:** cada rendimento vai no seu campo; a AT aplica cada coeficiente à sua parcela. Não se soma tudo num só coeficiente.
 - Redução dos coeficientes no início de atividade (−50% 1.º ano, −25% 2.º; n.º 10) **não se aplica** a quem tem rendimentos de Cat. A ou H nesses anos (informação vinculativa AT, proc. 29288/2025).

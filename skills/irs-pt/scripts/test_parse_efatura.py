@@ -168,22 +168,196 @@ class TestValoresDeReferencia(unittest.TestCase):
         self.assertAlmostEqual(ded, round(8.54 * ias, 2), places=2)
 
     def test_limiar_e_deducao_a_dividir_por_015(self):
-        for ano in (2025, 2026):
+        for ano in (2025, 2026):  # 2024 tem teste próprio (fórmula diferente)
             ded, limiar = self._eur(self._linha(ano)[1]), self._eur(self._linha(ano)[2])
             self.assertAlmostEqual(limiar, ded / 0.15, delta=1.0, msg=f"ano {ano}")
 
-    def test_2024_nao_usa_a_formula_de_8_54(self):
-        """2024 foi atualizado pela taxa de crescimento do IAS, não por 8,54 × IAS."""
+    def test_2024_usa_a_taxa_de_atualizacao_do_ias(self):
+        """2024: 4.104 × 1,06 (taxa de atualização do IAS), não 8,54 × IAS.
+
+        Valor oficial da AT — IRS 2024, deduções, benefícios e taxas.
+        """
         ded = self._eur(self._linha(2024)[1])
-        self.assertAlmostEqual(ded, 509.26 / 480.43 * 4104, delta=0.5)
-        self.assertNotAlmostEqual(ded, 8.54 * 509.26, delta=0.5)
+        self.assertAlmostEqual(ded, 4104 * 1.06, places=2)      # 4.350,24 €
+        self.assertNotAlmostEqual(ded, 8.54 * 509.26, delta=0.5)  # 4.349,08 € seria errado
 
-    def test_fonte_da_lei_presente(self):
+    def test_limiar_2024_coerente_com_a_deducao(self):
+        ded, limiar = self._eur(self._linha(2024)[1]), self._eur(self._linha(2024)[2])
+        self.assertAlmostEqual(limiar, ded / 0.15, delta=1.0)   # ≈ 29.002 €
+
+    def test_2024_confirmado_na_at(self):
+        self.assertIn("confirmado (AT, IRS 2024)", self._linha(2024)[6])
+        self.assertIn("IRS_2024", self.texto)
+
+    def test_as_duas_leis_estao_distinguidas(self):
+        """A Lei 32/2024 indexou à taxa; o múltiplo 8,54 veio com a Lei 45-A/2024 (OE 2025)."""
         self.assertIn("Lei n.º 32/2024", self.texto)
-        self.assertIn("diariodarepublica.pt/dr/detalhe/lei/32-2024", self.texto)
+        self.assertIn("Lei n.º 45-A/2024", self.texto)
+        self.assertIn("irs25.aspx", self.texto)
 
-    def test_2026_marcado_por_confirmar(self):
-        self.assertIn("a confirmar", self._linha(2026)[6].lower())
+    def test_2026_confirmado_com_fonte_oficial(self):
+        """Passou de fonte secundária a confirmado: portaria do IAS + redação em vigor."""
+        estado = self._linha(2026)[6].lower()
+        self.assertTrue(estado.startswith("confirmado"), estado)
+        self.assertIn("480-a/2025", estado, "falta a portaria do IAS que sustenta o valor")
+        self.assertNotIn("a confirmar", estado)
+
+
+class TestSentinela(unittest.TestCase):
+    """Guarda as correções do run #1: ordem dos passos, etiqueta e marcadores."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.yml = (RAIZ / ".github/workflows/sentinela.yml").read_text(encoding="utf-8")
+        cls.fontes = json.loads((RAIZ / "sentinela/fontes.json").read_text(encoding="utf-8"))["fontes"]
+
+    def test_issue_antes_da_baseline(self):
+        """Se a baseline for publicada primeiro e a issue falhar, a mudança perde-se."""
+        passos = re.findall(r"- name: (.+)", self.yml)
+        self.assertLess(next(i for i, n in enumerate(passos) if "issue" in n.lower()),
+                        next(i for i, n in enumerate(passos) if "guardar" in n.lower()))
+
+    def test_etiqueta_criada_antes_de_ser_usada(self):
+        """Sem a etiqueta, o gh recusa criar a issue e o alerta perde-se (run #1 e #2)."""
+        self.assertIn("gh label create sentinela", self.yml)
+        self.assertLess(self.yml.index("gh label create sentinela"), self.yml.index("gh issue create"))
+
+    def test_pdf_vigiado_por_hash(self):
+        vigiar = (RAIZ / "sentinela/vigiar.py").read_text(encoding="utf-8")
+        self.assertIn("sha256", vigiar)
+        self.assertIn("pdf", vigiar.lower())
+
+    def test_fontes_html_tem_marcador(self):
+        """PDFs são vigiados por hash; as páginas HTML precisam de marcador de conteúdo."""
+        for f in self.fontes:
+            if f["url"].lower().endswith(".pdf"):
+                continue
+            self.assertTrue(f.get("marcador"), f"{f['id']} sem marcador de conteúdo")
+
+    def test_treze_fontes_incluindo_o_pdf(self):
+        """12 páginas HTML + o Guia Prático ISS 1009 em PDF."""
+        self.assertEqual(len(self.fontes), 13)
+        pdfs = [f for f in self.fontes if f["url"].lower().endswith(".pdf")]
+        self.assertEqual(len(pdfs), 1, "esperava exatamente uma fonte em PDF")
+        self.assertIn("1009", pdfs[0]["url"], "o PDF devia ser o Guia ISS 1009")
+
+    def test_urls_sem_hifen_nos_artigos_b(self):
+        """Confirmado no run #3: irs78-b.aspx e irs101-b.aspx dão 404; sem hífen respondem."""
+        por_id = {f["id"]: f for f in self.fontes}
+        for fid in ("cirs-art78b-despesas-gerais", "cirs-art101b-dispensa"):
+            self.assertRegex(por_id[fid]["url"], r"irs(78|101)b\.aspx$", fid)
+
+    def test_tabela_do_151_vigiada_na_portaria(self):
+        """A página do art. 151.º não traz a tabela; ela vive na portaria."""
+        ids = {f["id"] for f in self.fontes}
+        self.assertIn("portaria-1011-2001-tabela-151", ids)
+
+    def test_ids_unicos(self):
+        ids = [f["id"] for f in self.fontes]
+        self.assertEqual(len(ids), len(set(ids)))
+
+    def test_marcador_rejeita_pagina_so_com_chrome(self):
+        """O caso real: a Segurança Social passou a guarda dos 200 chars com um aviso de cookies."""
+        sys.path.insert(0, str(RAIZ / "sentinela"))
+        import vigiar
+        cookies = ("Segurança Social Direta Ir para o conteúdo principal da página "
+                   "Este serviço usa cookies para melhorar a sua experiência de utilização. " * 3)
+        self.assertGreater(len(cookies), 200, "o texto de teste tem de passar a guarda do tamanho")
+        self.assertNotIn("independentes", cookies.lower())
+
+
+class TestValoresJSON(unittest.TestCase):
+    """valores-anuais.json é derivado do markdown. Se divergirem, é bug."""
+
+    GERADOR = RAIZ / "scripts/gerar_valores_json.py"
+    JSON = RAIZ / "skills/irs-pt/references/valores-anuais.json"
+    MD = RAIZ / "skills/irs-pt/references/valores-anuais.md"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.dados = json.loads(cls.JSON.read_text(encoding="utf-8"))
+
+    def _check(self, cwd=None):
+        return subprocess.run([sys.executable, str(self.GERADOR), "--check"],
+                              capture_output=True, text=True, cwd=cwd or RAIZ)
+
+    def test_json_sincronizado_com_o_markdown(self):
+        r = self._check()
+        self.assertEqual(r.returncode, 0, f"dessincronizado:\n{r.stdout}{r.stderr}")
+
+    def test_check_deteta_divergencia(self):
+        """Mutar o markdown tem de fazer o --check falhar — senão o teste não vale nada."""
+        original = self.MD.read_text(encoding="utf-8")
+        try:
+            self.MD.write_text(original.replace("| 522,50 €", "| 999,99 €", 1), encoding="utf-8")
+            r = self._check()
+            self.assertEqual(r.returncode, 1, "o --check passou com o markdown alterado")
+            self.assertIn("dessincronizado", r.stderr)
+        finally:
+            self.MD.write_text(original, encoding="utf-8")
+        self.assertEqual(self._check().returncode, 0, "o markdown não foi restaurado")
+
+    def test_anos_presentes_e_com_os_campos_da_app(self):
+        campos = ("ias", "deducao_especifica", "limiar_justificacao", "iva_art53_limite",
+                  "ss_isencao_acumulacao_mensal", "estado", "confirmado", "reservas")
+        self.assertGreaterEqual(len(self.dados["anos"]), 3)
+        for ano, v in self.dados["anos"].items():
+            for c in campos:
+                self.assertIn(c, v, f"{ano} sem {c}")
+            self.assertIsNotNone(v["ias"], ano)
+            self.assertIsNotNone(v["deducao_especifica"], ano)
+
+    def test_valores_batem_com_o_markdown(self):
+        self.assertAlmostEqual(self.dados["anos"]["2025"]["deducao_especifica"], 4462.15, places=2)
+        self.assertAlmostEqual(self.dados["anos"]["2024"]["deducao_especifica"], 4104 * 1.06, places=2)
+
+    def test_limiar_coerente_em_todos_os_anos(self):
+        for ano, v in self.dados["anos"].items():
+            self.assertAlmostEqual(v["limiar_justificacao"], v["deducao_especifica"] / 0.15,
+                                   delta=1.0, msg=f"limiar de {ano} não bate com dedução ÷ 0,15")
+
+    def test_reservas_sinalizadas_para_a_app(self):
+        """A app tem de distinguir 'confirmado' de 'confirmado com ressalva'.
+
+        Testa o mecanismo, não o ano: hoje nenhum ano tem ressalvas, mas o próximo
+        que ficar pendente tem de ser sinalizado sem se mexer no código.
+        """
+        for ano, v in self.dados["anos"].items():
+            self.assertIn("reservas", v, ano)
+            self.assertEqual(v["reservas"], "a confirmar" in v["estado"].lower(), ano)
+
+        sys.path.insert(0, str(RAIZ / "scripts"))
+        import gerar_valores_json as ger
+        sintetico = ("| Ano dos rendimentos | IAS | Dedução | Limiar | IVA | Saída | SS | Estado |\n"
+                     "|---|---|---|---|---|---|---|---|\n"
+                     "| 2027 | 550,00 € | 4.697,00 € | ~31.313 € | 15.000 € | 18.750 € | 2.200,00 € | "
+                     "confirmado por fonte secundária; DR/OE a confirmar |\n")
+        ano2027 = ger.extrair(sintetico)["anos"]["2027"]
+        self.assertTrue(ano2027["confirmado"])
+        self.assertTrue(ano2027["reservas"], "'a confirmar' no estado tem de levantar a ressalva")
+
+    def test_json_marcado_como_derivado(self):
+        self.assertIn("gerar_valores_json", self.dados["_gerado_por"])
+        self.assertIn("Não editar à mão", self.dados["_aviso"])
+
+
+class TestCoeficientes(unittest.TestCase):
+    """Todos os coeficientes do art. 31.º n.º 1 têm de estar na tabela."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.texto = (RAIZ / "skills/irs-pt/references/fiscal.md").read_text(encoding="utf-8")
+
+    def test_tabela_cobre_os_seis_coeficientes(self):
+        for coef in ("0,15", "0,75", "0,35", "0,95", "0,30", "0,10"):
+            self.assertRegex(self.texto, rf"\|\s*{re.escape(coef)}\s*\|", f"falta o coeficiente {coef}")
+
+    def test_subsidios_identificados_pelas_alineas(self):
+        self.assertIn("al. e)", self.texto)
+        self.assertIn("al. f)", self.texto)
+
+    def test_fonte_dos_coeficientes_presente(self):
+        self.assertIn("irs31.aspx", self.texto)
 
 
 class TestPlugin(unittest.TestCase):
