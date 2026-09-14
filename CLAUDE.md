@@ -63,6 +63,7 @@ e mostra a conta. Se uma regra muda, muda no repo, nunca no código da UI.
 - Substituir contabilista certificado.
 
 ### Decisão em aberto: direção da geração
+→ **[ADR-001](decisions/2026-09-14-direcao-da-geracao-valores-anuais.md)** (estado: Proposto).
 A proposta de `CLAUDE.md` que veio do design queria o **JSON canónico** e o markdown gerado
 a partir dele. O repo faz o **inverso** — markdown canónico, `gerar_valores_json.py` deriva o
 JSON — porque é o markdown que carrega as notas, as fontes e as ressalvas que um humano edita
