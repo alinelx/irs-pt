@@ -201,6 +201,110 @@ class TestValoresDeReferencia(unittest.TestCase):
         self.assertIn("a confirmar", estado)
 
 
+class TestSentinela(unittest.TestCase):
+    """Guarda as correções do run #1: ordem dos passos, etiqueta e marcadores."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.yml = (RAIZ / ".github/workflows/sentinela.yml").read_text(encoding="utf-8")
+        cls.fontes = json.loads((RAIZ / "sentinela/fontes.json").read_text(encoding="utf-8"))["fontes"]
+
+    def test_issue_antes_da_baseline(self):
+        """Se a baseline for publicada primeiro e a issue falhar, a mudança perde-se."""
+        passos = re.findall(r"- name: (.+)", self.yml)
+        self.assertLess(passos.index("Abrir issue se houver alerta"),
+                        passos.index("Guardar snapshots atualizados"))
+
+    def test_etiqueta_criada_antes_de_ser_usada(self):
+        self.assertIn("gh label create sentinela", self.yml)
+        self.assertLess(self.yml.index("gh label create sentinela"), self.yml.index("gh issue create"))
+
+    def test_todas_as_fontes_tem_marcador(self):
+        for f in self.fontes:
+            self.assertTrue(f.get("marcador"), f"{f['id']} sem marcador de conteúdo")
+
+    def test_fontes_que_falharam_tem_alternativas(self):
+        falharam = {"cirs-art78b-despesas-gerais", "cirs-art101b-dispensa",
+                    "civa-art53-isencao", "efatura-faq-atividade"}
+        for f in self.fontes:
+            if f["id"] in falharam:
+                self.assertTrue(f.get("alternativas"), f"{f['id']} sem URLs alternativas")
+
+    def test_ids_unicos(self):
+        ids = [f["id"] for f in self.fontes]
+        self.assertEqual(len(ids), len(set(ids)))
+
+    def test_marcador_rejeita_pagina_so_com_chrome(self):
+        """O caso real: a Segurança Social passou a guarda dos 200 chars com um aviso de cookies."""
+        sys.path.insert(0, str(RAIZ / "sentinela"))
+        import vigiar
+        cookies = ("Segurança Social Direta Ir para o conteúdo principal da página "
+                   "Este serviço usa cookies para melhorar a sua experiência de utilização. " * 3)
+        self.assertGreater(len(cookies), 200, "o texto de teste tem de passar a guarda do tamanho")
+        self.assertNotIn("independentes", cookies.lower())
+
+
+class TestValoresJSON(unittest.TestCase):
+    """valores-anuais.json é derivado do markdown. Se divergirem, é bug."""
+
+    GERADOR = RAIZ / "scripts/gerar_valores_json.py"
+    JSON = RAIZ / "skills/irs-pt/references/valores-anuais.json"
+    MD = RAIZ / "skills/irs-pt/references/valores-anuais.md"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.dados = json.loads(cls.JSON.read_text(encoding="utf-8"))
+
+    def _check(self, cwd=None):
+        return subprocess.run([sys.executable, str(self.GERADOR), "--check"],
+                              capture_output=True, text=True, cwd=cwd or RAIZ)
+
+    def test_json_sincronizado_com_o_markdown(self):
+        r = self._check()
+        self.assertEqual(r.returncode, 0, f"dessincronizado:\n{r.stdout}{r.stderr}")
+
+    def test_check_deteta_divergencia(self):
+        """Mutar o markdown tem de fazer o --check falhar — senão o teste não vale nada."""
+        original = self.MD.read_text(encoding="utf-8")
+        try:
+            self.MD.write_text(original.replace("| 522,50 €", "| 999,99 €", 1), encoding="utf-8")
+            r = self._check()
+            self.assertEqual(r.returncode, 1, "o --check passou com o markdown alterado")
+            self.assertIn("dessincronizado", r.stderr)
+        finally:
+            self.MD.write_text(original, encoding="utf-8")
+        self.assertEqual(self._check().returncode, 0, "o markdown não foi restaurado")
+
+    def test_anos_presentes_e_com_os_campos_da_app(self):
+        campos = ("ias", "deducao_especifica", "limiar_justificacao", "iva_art53_limite",
+                  "ss_isencao_acumulacao_mensal", "estado", "confirmado", "reservas")
+        self.assertGreaterEqual(len(self.dados["anos"]), 3)
+        for ano, v in self.dados["anos"].items():
+            for c in campos:
+                self.assertIn(c, v, f"{ano} sem {c}")
+            self.assertIsNotNone(v["ias"], ano)
+            self.assertIsNotNone(v["deducao_especifica"], ano)
+
+    def test_valores_batem_com_o_markdown(self):
+        self.assertAlmostEqual(self.dados["anos"]["2025"]["deducao_especifica"], 4462.15, places=2)
+        self.assertAlmostEqual(self.dados["anos"]["2024"]["deducao_especifica"], 4104 * 1.06, places=2)
+
+    def test_limiar_coerente_em_todos_os_anos(self):
+        for ano, v in self.dados["anos"].items():
+            self.assertAlmostEqual(v["limiar_justificacao"], v["deducao_especifica"] / 0.15,
+                                   delta=1.0, msg=f"limiar de {ano} não bate com dedução ÷ 0,15")
+
+    def test_reservas_sinalizadas_para_a_app(self):
+        """A app tem de conseguir distinguir 'confirmado' de 'confirmado com reservas'."""
+        self.assertFalse(self.dados["anos"]["2025"]["reservas"])
+        self.assertTrue(self.dados["anos"]["2026"]["reservas"],
+                        "2026 ainda diz 'a confirmar' no markdown mas o JSON não o sinaliza")
+
+    def test_json_marcado_como_derivado(self):
+        self.assertIn("gerar_valores_json", self.dados["_gerado_por"])
+        self.assertIn("Não editar à mão", self.dados["_aviso"])
+
+
 class TestCoeficientes(unittest.TestCase):
     """Todos os coeficientes do art. 31.º n.º 1 têm de estar na tabela."""
 

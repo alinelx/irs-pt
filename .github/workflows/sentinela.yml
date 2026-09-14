@@ -23,20 +23,29 @@ jobs:
       - name: Comparar com os snapshots
         run: python sentinela/vigiar.py
 
+      # A issue vem ANTES do commit da baseline. Se a ordem fosse a inversa e este passo
+      # falhasse, a baseline nova já estaria publicada e a mudança detetada desaparecia:
+      # a execução seguinte compararia novo com novo e nunca mais haveria alerta.
+      - name: Abrir issue se houver alerta
+        if: ${{ hashFiles('sentinela/ALERTA.md') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create sentinela \
+            --color B35C00 \
+            --description "Alerta automático da sentinela legal" \
+            --force
+          gh issue create \
+            --title "Sentinela: fontes legais alteradas ($(date -u +%F))" \
+            --label "sentinela" \
+            --body-file sentinela/ALERTA.md
+
+      # Só depois de o alerta estar publicado é que a baseline avança.
       - name: Guardar snapshots atualizados
+        if: success()
         run: |
           git config user.name "sentinela-bot"
           git config user.email "sentinela@users.noreply.github.com"
           git add sentinela/snapshots
           git diff --cached --quiet || git commit -m "sentinela: snapshots $(date -u +%F)"
           git push
-
-      - name: Abrir issue se houver alerta
-        if: ${{ hashFiles('sentinela/ALERTA.md') != '' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh issue create \
-            --title "Sentinela: fontes legais alteradas ($(date -u +%F))" \
-            --label "sentinela" \
-            --body-file sentinela/ALERTA.md

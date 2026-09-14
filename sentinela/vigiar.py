@@ -41,19 +41,41 @@ def buscar(url):
         except UnicodeDecodeError: continue
     return raw.decode("utf-8", "replace")
 
+def obter(f):
+    """Tenta a URL principal e as alternativas. Devolve (texto, url_usada) ou levanta a última falha.
+
+    O marcador é texto que TEM de aparecer na página. Uma página que responde 200 mas só
+    traz o aviso de cookies não passa — foi assim que a Segurança Social escapou à guarda
+    do tamanho mínimo na primeira execução.
+    """
+    marcador = (f.get("marcador") or "").lower()
+    erros = []
+    for url in [f["url"], *f.get("alternativas", [])]:
+        try:
+            txt = extrair(buscar(url))
+        except Exception as e:
+            erros.append(f"{url} -> {type(e).__name__}: {e}"); continue
+        if len(txt) < 200:
+            erros.append(f"{url} -> quase vazia ({len(txt)} chars)"); continue
+        if marcador and marcador not in txt.lower():
+            erros.append(f"{url} -> sem o marcador {marcador!r} ({len(txt)} chars) — página errada ou só chrome")
+            continue
+        return txt, url
+    raise LookupError(" | ".join(erros))
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--init", action="store_true"); a = ap.parse_args()
     fontes = json.loads((AQUI / "fontes.json").read_text(encoding="utf-8"))["fontes"]
     SNAP.mkdir(exist_ok=True)
     mudancas, falhas, novas = [], [], []
     for f in fontes:
-        fid, url = f["id"], f["url"]
+        fid = f["id"]
         try:
-            novo = extrair(buscar(url))
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as e:
+            novo, usada = obter(f)
+        except LookupError as e:
             falhas.append((f, str(e))); continue
-        if len(novo) < 200:
-            falhas.append((f, f"página quase vazia ({len(novo)} chars) — JS-only ou bloqueio?")); continue
+        if usada != f["url"]:
+            print(f"  NOTA {fid}: a URL principal falhou; funcionou a alternativa {usada}")
         p = SNAP / f"{fid}.txt"
         if not p.exists():
             p.write_text(novo, encoding="utf-8"); novas.append(f); continue
@@ -76,7 +98,7 @@ def main():
         linhas += ["**Ação humana:** ler o diff, decidir se afeta `skills/irs-pt/references/*.md`, atualizar e correr os testes. "
                    "A sentinela não altera a skill.", ""]
     if falhas:
-        linhas.append(f"## {len(falhas)} fonte(s) inacessíveis\n")
+        linhas.append(f"## {len(falhas)} fonte(s) inacessíveis ou sem o marcador esperado\n")
         for f, e in falhas: linhas.append(f"- `{f['id']}` — {f['url']} — {e}")
         linhas += ["", "Se persistir, a URL mudou ou o site passou a bloquear: atualizar `sentinela/fontes.json`.", ""]
     (AQUI / "ALERTA.md").write_text("\n".join(linhas), encoding="utf-8")

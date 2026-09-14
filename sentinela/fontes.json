@@ -1,17 +1,93 @@
 {
-  "_nota": "Fontes oficiais vigiadas pela sentinela. Qualquer mudança de texto abre uma issue. Acrescenta linhas à vontade — id único, url oficial, porquê.",
+  "_nota": "Fontes oficiais vigiadas pela sentinela. Qualquer mudança de texto abre uma issue. 'marcador' é texto que TEM de aparecer na página: se faltar, a fonte conta como falha mesmo que a página responda 200 (evita vigiar avisos de cookies). 'alternativas' são URLs a tentar por ordem se a principal falhar.",
   "fontes": [
-    {"id": "cirs-art25-deducoes-catA",   "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs25.aspx",  "porque": "Dedução específica (8,54×IAS) — é o número que define o limiar dos 15%"},
-    {"id": "cirs-art28-regime",           "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs28.aspx",  "porque": "Enquadramento no regime simplificado / contabilidade organizada (200.000 €)"},
-    {"id": "cirs-art31-coeficientes",     "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs31.aspx",  "porque": "Coeficientes, regra dos 15%, subsídios, redução no início de atividade"},
-    {"id": "cirs-art68-taxas",            "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs68.aspx",  "porque": "Escalões e taxas gerais"},
-    {"id": "cirs-art78-deducoes-coleta",  "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78.aspx",  "porque": "Deduções à coleta (o que se perde ao afetar faturas à atividade)"},
-    {"id": "cirs-art78b-despesas-gerais", "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78-b.aspx", "porque": "Despesas gerais familiares e prazo de reclamação de faturas"},
-    {"id": "cirs-art101-retencao",        "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101.aspx", "porque": "Taxas de retenção na fonte Cat. B"},
-    {"id": "cirs-art101b-dispensa",       "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101-b.aspx", "porque": "Dispensa de retenção (limite 15.000 €)"},
-    {"id": "cirs-art151-tabela",          "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs151.aspx", "porque": "Tabela de atividades a 0,75"},
-    {"id": "civa-art53-isencao",          "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/civa_rep/Pages/iva53.aspx",  "porque": "Limite de isenção de IVA"},
-    {"id": "ss-trabalhadores-independentes", "url": "https://www.seg-social.pt/trabalhadores-independentes", "porque": "Taxa, base de incidência, isenção por acumulação (4×IAS)"},
-    {"id": "efatura-faq-atividade",       "url": "https://faturas.portaldasfinancas.gov.pt/faq.action", "porque": "Regras de classificação de faturas no e-Fatura (total/parcial)"}
+    {
+      "id": "cirs-art25-deducoes-catA",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs25.aspx",
+      "porque": "Dedução específica (8,54×IAS) — é o número que define o limiar dos 15%",
+      "marcador": "dedu"
+    },
+    {
+      "id": "cirs-art28-regime",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs28.aspx",
+      "porque": "Enquadramento no regime simplificado / contabilidade organizada (200.000 €)",
+      "marcador": "simplificado"
+    },
+    {
+      "id": "cirs-art31-coeficientes",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs31.aspx",
+      "porque": "Coeficientes, regra dos 15%, subsídios, redução no início de atividade",
+      "marcador": "coeficiente"
+    },
+    {
+      "id": "cirs-art68-taxas",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs68.aspx",
+      "porque": "Escalões e taxas gerais",
+      "marcador": "taxa"
+    },
+    {
+      "id": "cirs-art78-deducoes-coleta",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78.aspx",
+      "porque": "Deduções à coleta (o que se perde ao afetar faturas à atividade)",
+      "marcador": "coleta"
+    },
+    {
+      "id": "cirs-art78b-despesas-gerais",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78-b.aspx",
+      "porque": "Despesas gerais familiares e prazo de reclamação de faturas",
+      "marcador": "familiares",
+      "alternativas": [
+        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78b.aspx",
+        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs78-B.aspx"
+      ]
+    },
+    {
+      "id": "cirs-art101-retencao",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101.aspx",
+      "porque": "Taxas de retenção na fonte Cat. B",
+      "marcador": "reten"
+    },
+    {
+      "id": "cirs-art101b-dispensa",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101-b.aspx",
+      "porque": "Dispensa de retenção (limite 15.000 €)",
+      "marcador": "dispensa",
+      "alternativas": [
+        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101b.aspx",
+        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs101-B.aspx"
+      ]
+    },
+    {
+      "id": "cirs-art151-tabela",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/Pages/irs151.aspx",
+      "porque": "Tabela de atividades a 0,75",
+      "marcador": "Arquitetos"
+    },
+    {
+      "id": "civa-art53-isencao",
+      "url": "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/civa_rep/Pages/iva53.aspx",
+      "porque": "Limite de isenção de IVA",
+      "marcador": "isen",
+      "alternativas": [
+        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/civa_rep/Pages/civa53.aspx",
+        "https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/iva_rep/Pages/iva53.aspx"
+      ]
+    },
+    {
+      "id": "ss-trabalhadores-independentes",
+      "url": "https://www.seg-social.pt/trabalhadores-independentes",
+      "porque": "Taxa, base de incidência, isenção por acumulação (4×IAS)",
+      "marcador": "independentes"
+    },
+    {
+      "id": "efatura-faq-atividade",
+      "url": "https://faturas.portaldasfinancas.gov.pt/faq.action",
+      "porque": "Regras de classificação de faturas no e-Fatura (total/parcial)",
+      "marcador": "fatura",
+      "alternativas": [
+        "https://faturas.portaldasfinancas.gov.pt/json/faq.action",
+        "https://info.portaldasfinancas.gov.pt/pt/faturas/Pages/default.aspx"
+      ]
+    }
   ]
 }
