@@ -168,22 +168,56 @@ class TestValoresDeReferencia(unittest.TestCase):
         self.assertAlmostEqual(ded, round(8.54 * ias, 2), places=2)
 
     def test_limiar_e_deducao_a_dividir_por_015(self):
-        for ano in (2025, 2026):
+        for ano in (2025, 2026):  # 2024 tem teste próprio (fórmula diferente)
             ded, limiar = self._eur(self._linha(ano)[1]), self._eur(self._linha(ano)[2])
             self.assertAlmostEqual(limiar, ded / 0.15, delta=1.0, msg=f"ano {ano}")
 
-    def test_2024_nao_usa_a_formula_de_8_54(self):
-        """2024 foi atualizado pela taxa de crescimento do IAS, não por 8,54 × IAS."""
+    def test_2024_usa_a_taxa_de_atualizacao_do_ias(self):
+        """2024: 4.104 × 1,06 (taxa de atualização do IAS), não 8,54 × IAS.
+
+        Valor oficial da AT — IRS 2024, deduções, benefícios e taxas.
+        """
         ded = self._eur(self._linha(2024)[1])
-        self.assertAlmostEqual(ded, 509.26 / 480.43 * 4104, delta=0.5)
-        self.assertNotAlmostEqual(ded, 8.54 * 509.26, delta=0.5)
+        self.assertAlmostEqual(ded, 4104 * 1.06, places=2)      # 4.350,24 €
+        self.assertNotAlmostEqual(ded, 8.54 * 509.26, delta=0.5)  # 4.349,08 € seria errado
 
-    def test_fonte_da_lei_presente(self):
+    def test_limiar_2024_coerente_com_a_deducao(self):
+        ded, limiar = self._eur(self._linha(2024)[1]), self._eur(self._linha(2024)[2])
+        self.assertAlmostEqual(limiar, ded / 0.15, delta=1.0)   # ≈ 29.002 €
+
+    def test_2024_confirmado_na_at(self):
+        self.assertIn("confirmado (AT, IRS 2024)", self._linha(2024)[6])
+        self.assertIn("IRS_2024", self.texto)
+
+    def test_as_duas_leis_estao_distinguidas(self):
+        """A Lei 32/2024 indexou à taxa; o múltiplo 8,54 veio com a Lei 45-A/2024 (OE 2025)."""
         self.assertIn("Lei n.º 32/2024", self.texto)
-        self.assertIn("diariodarepublica.pt/dr/detalhe/lei/32-2024", self.texto)
+        self.assertIn("Lei n.º 45-A/2024", self.texto)
+        self.assertIn("irs25.aspx", self.texto)
 
-    def test_2026_marcado_por_confirmar(self):
-        self.assertIn("a confirmar", self._linha(2026)[6].lower())
+    def test_2026_confirmado_por_fonte_secundaria(self):
+        estado = self._linha(2026)[6].lower()
+        self.assertIn("fonte secundária", estado)
+        self.assertIn("a confirmar", estado)
+
+
+class TestCoeficientes(unittest.TestCase):
+    """Todos os coeficientes do art. 31.º n.º 1 têm de estar na tabela."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.texto = (RAIZ / "skills/irs-pt/references/fiscal.md").read_text(encoding="utf-8")
+
+    def test_tabela_cobre_os_seis_coeficientes(self):
+        for coef in ("0,15", "0,75", "0,35", "0,95", "0,30", "0,10"):
+            self.assertRegex(self.texto, rf"\|\s*{re.escape(coef)}\s*\|", f"falta o coeficiente {coef}")
+
+    def test_subsidios_identificados_pelas_alineas(self):
+        self.assertIn("al. e)", self.texto)
+        self.assertIn("al. f)", self.texto)
+
+    def test_fonte_dos_coeficientes_presente(self):
+        self.assertIn("irs31.aspx", self.texto)
 
 
 class TestPlugin(unittest.TestCase):
