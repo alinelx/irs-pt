@@ -1,93 +1,60 @@
 # irs-pt
 
-Plugin do Claude Code para apoio ao **IRS português** de trabalhadores independentes
-(Categoria B, regime simplificado).
+Assistente open source de IRS e e-Fatura para trabalhadores independentes em Portugal (regime simplificado), em formato **Agent Skill** — funciona no Claude (Code, Desktop, claude.ai, Cowork) e em qualquer agente compatível com [agentskills.io](https://agentskills.io).
 
-Parte de uma observação simples: no regime simplificado, a pergunta útil não é *"que
-faturas tenho?"* mas **"preciso sequer de faturas?"**. A dedução automática do art. 31.º
-costuma cobrir a regra dos 15% sozinha — e em 2025 cobre até **29.747,67 €** de
-rendimento bruto. O fluxo faz essa conta no Passo 2, antes de abrir o e-Fatura.
+**Não é aconselhamento fiscal. Não submete nada no Portal das Finanças.** Explica, calcula e recomenda; a decisão e o clique são teus. Confirma com contabilista certificado.
+
+## Porquê
+
+A pergunta que quase ninguém sabe responder: *"vale a pena afetar esta fatura à atividade?"*
+
+No regime simplificado a resposta é surpreendentemente binária. Só precisas de justificar despesas se 15% do rendimento bruto de serviços ultrapassar a dedução específica automática (4.462,15 € para rendimentos de 2025). Abaixo de ~29.748 €/ano de serviços, **as tuas faturas de gastos não mudam o IRS da atividade** — e afetá-las só te faz perder deduções pessoais (saúde, educação, despesas gerais).
+
+A skill faz essa conta primeiro e só depois fala de faturas. Lida com atividades mistas (vendas 0,15 + serviços 0,75 + outros serviços 0,35) e com acumulação de trabalho por conta de outrem.
+
+## O que faz
+
+1. Pergunta 2-3 coisas (atividades, rendimento esperado, Cat. A / IVA)
+2. Calcula o limiar do ano e diz-te, em uma frase, se as faturas interessam
+3. Se sim, lê o CSV exportado do e-Fatura (`scripts/parse_efatura.py`, sem dependências, sem enviar dados) e propõe classificação fatura a fatura
+4. Mostra um preview e pede confirmação antes de listar o que clicar no portal
+5. Termina com uma próxima ação e os prazos do ano
 
 ## Instalar
 
+**Claude Code**
 ```
 /plugin marketplace add alinelx/irs-pt
 /plugin install irs-pt@irs-pt
 ```
 
-Ou, a partir de um clone local:
+**Claude Desktop / claude.ai** — `+` → Plugins → adicionar marketplace a partir do repositório `alinelx/irs-pt`. Requer Skills e code execution ativos. Alternativa: zipar `skills/irs-pt/` e carregar em Settings → Capabilities → Skills → Upload skill.
 
+**Outros agentes (Cursor, Codex, Copilot, Gemini CLI…)**
 ```
-/plugin marketplace add .
+npx skills add alinelx/irs-pt --skill irs-pt
 ```
-
-## Usar
-
-Depois de instalado, basta pedir em linguagem natural:
-
-> quero tratar do meu e-Fatura de 2025
-
-A skill pergunta o enquadramento (ano, CAEs e coeficientes, rendimento bruto,
-contribuições pagas), faz a conta do limiar e só depois — se for preciso — parte para as
-faturas.
-
-### Parser do e-Fatura
-
-Pode ser corrido isoladamente:
-
-```bash
-python3 skills/irs-pt/scripts/parse_efatura.py FICHEIRO.csv --ano 2025 --resumo
-python3 skills/irs-pt/scripts/parse_efatura.py *.csv --json
-```
-
-Tolerante a variações de codificação (UTF-8, cp1252, latin-1), delimitador (`;` `,` tab
-`|`), formato de data e nomes de coluna. Corrige o sinal das notas de crédito, exclui
-documentos anulados, agrupa por setor, estado, mês e emitente, e lista as faturas
-pendentes. Só depende da biblioteca padrão do Python 3.9+.
 
 ## Estrutura
 
 ```
-.claude-plugin/
-  marketplace.json      # torna o repo instalável como marketplace
-  plugin.json           # manifesto do plugin
 skills/irs-pt/
-  SKILL.md              # fluxo de 5 passos
-  references/
-    valores-anuais.md   # só o que muda por ano (IAS, dedução, limiares, prazos)
-    fiscal.md           # mecânica estrutural (coeficientes, regra dos 15%)
-    efatura.md          # regra por fatura (afetação, NIF, casos-limite)
-  scripts/
-    parse_efatura.py
-    exemplo-efatura.csv # dados fictícios, para testar
+  SKILL.md                     fluxo de 5 passos + regras invioláveis
+  references/valores-anuais.md o que muda todos os anos (IAS, limiares, prazos) — atualizar AQUI
+  references/fiscal.md         mecânica estrutural (coeficientes, art. 31.º n.º 13, IVA, SS)
+  references/efatura.md        classificação no portal, regra por fatura, exportação CSV
+  scripts/parse_efatura.py     resumo do CSV do e-Fatura (stdlib only)
 ```
 
-## Valores
+## Estado
 
-`references/valores-anuais.md` separa o que está **verificado** do que está **por
-confirmar**, com a fonte de cada valor. Para rendimentos de 2025:
+v0.1.0 — valores de 2025 confirmados; 2026 marcados como "a confirmar". Testado por uma pessoa (a autora) na sua própria declaração. Issues e PRs bem-vindos, sobretudo de contabilistas certificados.
 
-| Valor | Montante |
-|---|---|
-| IAS | 522,50 € |
-| Dedução específica (8,54 × IAS) | 4.462,15 € |
-| Limiar de dispensa de justificação | 29.747,67 € |
+## Referências e projetos vizinhos
 
-> Muita fonte online ainda indica 4.104 € e um limiar de 27.360 €. Está desatualizado:
-> desde 2025 o art. 25.º n.º 1 do CIRS está indexado ao IAS.
-
-Os valores de 2026 estão marcados como por confirmar até saírem os do OE aplicável.
-
-## Privacidade
-
-O `.gitignore` bloqueia `*.csv`, `*.xlsx` e `*.pdf` para que dados do e-Fatura nunca
-sejam commitados por acidente. O único CSV versionado é o exemplo sintético.
-
-## Aviso
-
-Não é aconselhamento fiscal e não substitui contabilista certificado nem a Autoridade
-Tributária. A declaração é sempre do contribuinte, e os valores da AT prevalecem sobre
-qualquer cálculo feito aqui.
+- CIRS art. 25.º, 28.º, 31.º; CIVA art. 53.º (DL n.º 35/2025); Código Contributivo art. 157.º
+- [FIZ-co/fiz-invoicing-skill](https://github.com/FIZ-co/fiz-invoicing-skill) — faturação PT com IA, referência de estrutura
+- [calef/us-federal-tax-assistant-skill](https://github.com/calef/us-federal-tax-assistant-skill), [robbalian/claude-tax-filing](https://github.com/robbalian/claude-tax-filing) — skills de impostos nos EUA
 
 ## Licença
 

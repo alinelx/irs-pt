@@ -1,79 +1,32 @@
-# Valores anuais
+# Valores anuais (mudam todos os anos — atualizar aqui, nunca na lógica)
 
-**Só entra aqui o que muda de ano para ano.** A mecânica que não muda está em
-`fiscal.md`. Verificado em setembro de 2026.
+Convenção: o **ano dos rendimentos** é o que conta. O IRS entregue em N reporta rendimentos de N-1 e usa o IAS de N-1.
+Fórmula da dedução específica desde a Lei n.º 32/2024, de 7 de agosto: **8,54 × IAS**.
+Limiar de justificação de despesas (regime simplificado, só serviços 0,75/0,35): **dedução específica ÷ 0,15**.
 
-Convenção: **ano de rendimentos** (o ano em que o dinheiro foi ganho), não o ano da
-entrega. Rendimentos de 2025 → declaração entregue em 2026.
+| Ano dos rendimentos | IAS | Dedução específica (8,54×IAS) | Limiar de justificação | Limite isenção IVA art. 53.º | Saída imediata IVA (+25%) | Isenção SS por acumulação (4×IAS/mês) | Estado |
+|---|---|---|---|---|---|---|---|
+| 2024 | 509,26 € | 4.349,08 € (na prática 4.104 € mín.) | ~28.994 € | 14.500 € | 18.125 € | 2.037,04 € | histórico |
+| 2025 | 522,50 € | 4.462,15 € | ~29.748 € | 15.000 € | 18.750 € | 2.090,00 € | confirmado (IRS entregue abr–jun 2026) |
+| 2026 | 537,13 € | 4.587,09 € | ~30.580 € | 15.000 € | 18.750 € | 2.148,52 € | **a confirmar** — IAS pela Portaria n.º 480-A/2025/1; OE 2026 pode alterar |
 
----
+Valor histórico da norma do art. 31.º n.º 13: 4.104 € → limiar 27.360 €. É o número que aparece na maioria dos artigos online; está desatualizado quando a dedução específica é superior.
 
-## Ano de rendimentos 2025 — ✅ verificado
+Fontes a verificar em cada atualização: Portal das Finanças (CIRS art. 25.º e 31.º; CIVA art. 53.º), Diário da República (portaria do IAS), seg-social.pt (trabalhadores independentes).
 
-| Valor | Montante | Fonte |
-|---|---|---|
-| IAS | **522,50 €** | Portaria n.º 6-B/2025/1, de 6 de janeiro |
-| Dedução específica Cat. A (art. 25.º n.º 1 CIRS) | **4.462,15 €** | 8,54 × IAS — indexação em vigor desde 2025 |
-| Limiar de dispensa de justificação (bruto) | **29.747,67 €** | 4.462,15 ÷ 0,15 (derivado) |
-| Limite do regime simplificado | 200.000 € de rendimento bruto anual | art. 28.º CIRS |
+## Calendário
 
-> ⚠️ **Atenção — erro comum.** Muita fonte online (e material de anos anteriores) ainda
-> diz **4.104 €** e um limiar de **27.360 €**. Esse valor está desatualizado: desde 2025
-> o art. 25.º n.º 1 está **indexado ao IAS** (8,54 × IAS). Usar 4.104 € subestima a
-> dedução automática em 358,15 € e faz parecer que é preciso justificar despesas quando
-> muitas vezes não é. Se uma resposta usar 4.104 € para 2025, está errada.
+### IRS 2026 (rendimentos de 2025) — folheto oficial da AT
+- até **2 mar 2026** — validar/classificar faturas no e-Fatura; confirmar agregado familiar
+- **16–31 mar 2026** — consultar deduções à coleta e reclamar faturas em falta
+- até **31 mar 2026** — consignação de IRS/IVA (opcional)
+- **1 abr – 30 jun 2026** — entrega da Modelo 3 (Anexos A, B, H…)
+- até **31 jul 2026** — liquidação; até **31 ago 2026** — reembolso/pagamento
 
-### Contribuições à Segurança Social (trabalhador independente)
+### IRS 2027 (rendimentos de 2026)
+Ainda não publicado. Assumir datas análogas **e dizer ao utilizador que não estão confirmadas**.
 
-| Valor | Montante |
-|---|---|
-| Taxa contributiva | 21,4% |
-| Base (rendimento relevante) | 70% das prestações de serviços |
-| Peso efetivo no bruto | **≈ 14,98%** (0,214 × 0,70) |
-
-Quem descontou sobre a totalidade do rendimento cobre quase sozinho os 15% do art. 31.º.
-**Usar sempre o valor efetivamente pago**, não esta estimativa: isenção nos primeiros 12
-meses de atividade, acumulação com trabalho dependente, bases declaradas ajustadas e
-dispensas alteram o resultado.
-
-### Prazos da campanha (rendimentos 2025, entrega em 2026)
-
-| Data | O quê |
-|---|---|
-| até **2 de março de 2026** | Validar faturas pendentes no e-Fatura (25/02 caiu a sábado → 1.º dia útil seguinte) |
-| **16 a 31 de março de 2026** | Consultar despesas dedutíveis no Portal; reclamar até 31/03 |
-| **1 de abril a 30 de junho de 2026** | Entregar a Modelo 3 (exclusivamente online) |
-| até **31 de julho de 2026** | Liquidação pela AT (se entregue dentro do prazo) |
-| até **31 de agosto de 2026** | Reembolso, se a declaração for considerada "certa" |
-
----
-
-## Ano de rendimentos 2026 — ⚠️ A CONFIRMAR
-
-| Valor | Montante | Estado |
-|---|---|---|
-| IAS | **537,13 €** | ✅ verificado |
-| Dedução específica Cat. A | 4.587,09 € | ⚠️ derivado de 8,54 × IAS — **confirmar que a fórmula se mantém** |
-| Limiar de dispensa (bruto) | 30.580,60 € | ⚠️ derivado do anterior |
-| Prazos da campanha de 2027 | — | ⚠️ ainda não publicados |
-
-O Orçamento do Estado pode alterar o multiplicador, a indexação ou os coeficientes.
-**Não apresentar os valores de 2026 como confirmados** sem verificar o OE em vigor.
-
----
-
-## Como atualizar este ficheiro
-
-1. IAS do ano — Portaria publicada em Diário da República, normalmente em janeiro.
-2. Art. 25.º n.º 1 CIRS — confirmar se a indexação (8,54 × IAS) se mantém.
-3. Recalcular a dedução e o limiar (`dedução ÷ 0,15`).
-4. Prazos da campanha — Portal das Finanças, secção Modelo 3.
-5. Passar o ano anterior de ⚠️ para ✅ só depois de verificado na fonte.
-
-### Fontes
-
-- Diário da República — <https://diariodarepublica.pt> (Portaria do IAS, OE)
-- Código do IRS — <https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/cirs_rep/>
-- Modelo 3 e prazos — <https://info.portaldasfinancas.gov.pt/pt/apoio_ao_contribuinte/Cidadaos/Rendimentos/Declaracao/Modelo_3/>
-- e-Fatura — <https://faturas.portaldasfinancas.gov.pt>
-- Segurança Social Direta — <https://www.seg-social.pt>
+## Outros valores estruturais (não mudam com o ano, mas confirmar)
+- Contabilidade organizada obrigatória: RB Cat. B > 200.000 € (art. 28.º CIRS)
+- Dispensa de retenção na fonte Cat. B: rendimento anual estimado ≤ 15.000 € (art. 101.º-B)
+- Segurança Social TI: taxa 21,4%; rendimento relevante = 70% dos serviços / 20% das vendas

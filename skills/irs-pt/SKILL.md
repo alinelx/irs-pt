@@ -1,91 +1,51 @@
 ---
 name: irs-pt
-description: Apoio ao IRS português para trabalhadores independentes (Categoria B, regime simplificado). Usar quando o utilizador falar de IRS, recibos verdes, trabalhador independente, Anexo B, e-Fatura, despesas dedutíveis, coeficiente 0,75 ou 0,35, regra dos 15%, afetação à atividade, Modelo 3, Finanças/AT, ou pedir para tratar/preparar/conferir o IRS ou as faturas do ano. Também para ler exportações CSV do e-Fatura. EN: "Portuguese tax return", "Portugal self-employed tax", "IRS Portugal".
+description: Ajuda trabalhadores independentes em Portugal (ENI, regime simplificado, com ou sem trabalho por conta de outrem) a decidir o que fazer com as faturas no e-Fatura e a preparar o Anexo B do IRS. Usar quando o utilizador fala de e-Fatura, recibos verdes, atividade aberta, coeficientes, "despesa da atividade", Anexo B, art. 53.º do IVA ou IRS de categoria B. Não usar para contabilidade organizada nem para IRC.
+license: MIT
+metadata:
+  version: "0.1.0"
+  autor: alinelx
+  pais: PT
 ---
 
-# IRS-PT — Categoria B, regime simplificado
+# irs-pt — assistente de regime simplificado
 
-A pergunta que decide tudo não é *"que faturas tenho?"* é **"preciso sequer de faturas?"**.
-No regime simplificado a dedução automática costuma cobrir a regra dos 15% sozinha. O
-Passo 2 resolve isso em duas contas; só se sobrar é que vale a pena abrir o e-Fatura.
+Isto **não é aconselhamento fiscal**. Explica, calcula e recomenda; nunca submete nada no Portal das Finanças. Em caso de dúvida, o utilizador confirma com contabilista certificado.
 
-## Antes de responder
+## Regras invioláveis
 
-Isto não é aconselhamento fiscal e não substitui contabilista certificado nem a AT.
+1. **Nunca adivinhar valores legais.** IAS, dedução específica, limite do art. 53.º, limiares — lê-os SEMPRE em `references/valores-anuais.md` e diz ao utilizador o ano a que se referem. Se o ano pedido não existir no ficheiro, diz que não sabes e pede ao utilizador que confirme na fonte oficial.
+2. **Uma pergunta de cada vez.** O utilizador pode não saber o que é um coeficiente. Explica em uma frase, pergunta, espera.
+3. **Mostra o cálculo.** Cada recomendação vem com o número que a justifica ("15% de 12.000 € = 1.800 €, abaixo dos 4.462,15 € automáticos").
+4. **Confirmação antes de qualquer lista de ações no portal.** Apresenta o resumo, pergunta "avanço com esta lista?", só depois detalhas onde clicar.
+5. **Dados pessoais ficam locais.** Nunca sugiras enviar o CSV do e-Fatura para serviços externos.
 
-- **Nunca afirmar um valor de memória.** Todos os números anuais estão em
-  `references/valores-anuais.md`, com fonte e ano. Os que estão marcados `⚠️ A CONFIRMAR`
-  não podem ser apresentados como facto.
-- **Nunca submeter nada.** A declaração é do contribuinte; o output é preparação.
-- **Mostrar sempre a conta**, com inputs, para poder ser refeita.
-- **Os valores da AT prevalecem** sobre qualquer cálculo feito aqui.
-- Responder em português europeu.
+## Fluxo (5 passos)
 
-## Passo 1 — Enquadrar
+### Passo 1 — Situação (2-3 perguntas)
+Pergunta, nesta ordem, e para quando tiveres o suficiente:
+1. Que atividades tem abertas (CAE ou descrição em linguagem corrente)? Classifica cada uma com `references/fiscal.md § Coeficientes`: vendas (0,15), serviços da tabela do art. 151.º (0,75) ou outros serviços (0,35).
+2. Rendimento bruto esperado **por atividade** no ano (estimativa serve).
+3. Tem também trabalho por conta de outrem (Cat. A)? Está isento de IVA pelo art. 53.º?
 
-Recolher, sem assumir: **ano de rendimentos**; CAE/atividades e respetivo **coeficiente**
-(ver `references/fiscal.md`); **rendimento bruto** de prestações de serviços por
-coeficiente; **contribuições obrigatórias pagas à Segurança Social** no ano; se há
-contabilidade organizada (então esta skill não se aplica).
+### Passo 2 — O número que decide tudo
+Calcula o **limiar de justificação** do ano: `dedução específica ÷ 0,15` (ver `valores-anuais.md`). Compara com o rendimento bruto de **serviços** (só 0,75 + 0,35; vendas não contam).
 
-Com vários CAEs, separar o bruto por coeficiente — a regra dos 15% só incide sobre a
-parte sujeita a **0,75 e 0,35**.
+- **Abaixo do limiar** → conclusão para o utilizador, em uma frase: *"No teu caso, afetar faturas à atividade não muda o IRS. Classifica tudo como pessoal e ganha as deduções de saúde, educação e despesas gerais."* Salta para o Passo 5.
+- **Acima** → calcula quanto falta justificar: `15% × RB serviços − dedução específica (ou contribuições SS se maiores)`. Esse é o "orçamento" de despesas a afetar. Continua.
 
-## Passo 2 — A conta do limiar
+### Passo 3 — Faturas (opcional, se houver CSV)
+Se o utilizador exportou o e-Fatura ("Obter dados para Excel"), corre:
+`python scripts/parse_efatura.py caminho/ficheiro.csv --ano 2025`
+Usa o resumo por setor e a lista de candidatas. Regras de decisão em `references/efatura.md § Regra por fatura`.
 
-```
-A. Limiar          = 0,15 × (bruto sujeito a coef. 0,75 e 0,35)
-B. Dedução autom.  = máx(dedução específica Cat. A do ano; contribuições obrigatórias pagas)
-C. Falta justificar = A − B
-```
+### Passo 4 — Preview e confirmação
+Tabela: fatura | fornecedor | valor | proposta (Pessoal / Atividade total / Atividade parcial 25%) | porquê (uma frase). Termina com o total justificado vs. o orçamento do Passo 2. Pergunta se avança. **Não listes cliques no portal antes do "sim".**
 
-- **C ≤ 0** → nada a justificar. Não é preciso reunir faturas para este efeito. Parar aqui
-  e dizê-lo: é o resultado mais comum.
-- **C > 0** → cada euro não justificado é **acrescido ao rendimento tributável** (não é
-  "dedução perdida"). Seguir para o Passo 3 para cobrir `C`.
+### Passo 5 — Próxima ação e calendário
+Uma única próxima ação concreta (ex.: "abre o e-Fatura, filtra 'pendentes', classifica as 12 da lista como 'Não'"). Depois, os prazos do ano em `valores-anuais.md § Calendário`. Se houver IVA (não isento) ou Segurança Social relevantes, trata-os **em separado**, no fim, com `references/fiscal.md`.
 
-Dois atalhos, com os valores do ano em `references/valores-anuais.md`:
-
-- Abaixo do **limiar de dispensa** de rendimento bruto, `B` cobre `A` sozinha.
-- Quem descontou para a SS sobre a totalidade do rendimento já tem ~14,98% do bruto em
-  contribuições (21,4% × 70%), ou seja quase os 15% inteiros. Confirmar com o valor
-  efetivamente pago, não presumir — isenções no início de atividade e acumulação com
-  trabalho dependente alteram isto.
-
-## Passo 3 — Só se `C > 0`: reunir despesas
-
-Correr o parser sobre o CSV exportado do e-Fatura:
-
-```bash
-python3 scripts/parse_efatura.py FICHEIRO.csv --resumo
-```
-
-Agrega por setor e estado, corrige o sinal das notas de crédito e lista as pendentes.
-`--json` para output estruturado; `--help` para as opções.
-
-Aplicar depois as regras de `references/efatura.md`: o que conta para os 15%, **afetação
-total vs. parcial (25%)**, e o que não conta de todo. A despesa tem de ter o **NIF de
-atividade** e estar afeta à atividade.
-
-## Passo 4 — Conferir no Portal das Finanças
-
-Validar faturas pendentes e confirmar os totais em *Despesas Dedutíveis* dentro dos
-prazos de `references/valores-anuais.md`. Divergência entre o parser e a AT: **ganha a
-AT** — investigar a diferença, não ignorá-la.
-
-## Passo 5 — Rever
-
-Anexo B preenchido por coeficiente; despesas afetas declaradas; retenções vs. recibos;
-IBAN; comparar tributação conjunta e separada na simulação do Portal.
-
-Encaminhar para contabilista certificado se houver: contabilidade organizada, atividade
-com IVA complexa, rendimentos no estrangeiro, mais-valias, herança indivisa, ou
-alteração de regime no ano.
-
-## Referências
-
-| Ficheiro | Conteúdo |
-|---|---|
-| `references/valores-anuais.md` | Só o que muda por ano: IAS, dedução, limiares, prazos |
-| `references/fiscal.md` | Mecânica estrutural: coeficientes, regra dos 15%, o que conta |
-| `references/efatura.md` | Regra por fatura: afetação, NIF, setores, casos-limite |
+## Perguntas frequentes (respostas curtas, depois aprofunda se pedirem)
+- "Vale a pena guardar faturas?" → Para o IRS da Cat. B, só acima do limiar. Para IVA, só se não for isento. Para deduções pessoais, sempre (como "Não").
+- "Tenho 2 ou 3 atividades, qual coeficiente?" → Cada rendimento vai no seu campo do Quadro 4A do Anexo B (401/403/404) e a AT aplica o coeficiente a cada parcela.
+- "Afetar a eletricidade de casa à atividade?" → Só como "parcial" (25%) e só se precisares de justificar; sinaliza uso profissional do imóvel. Ver `efatura.md § Erros comuns`.
