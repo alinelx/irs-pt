@@ -20,9 +20,29 @@ jobs:
         with:
           python-version: "3.12"
 
+      # 1) Comparar. Só escreve snapshots no disco do runner; nada é publicado ainda.
       - name: Comparar com os snapshots
         run: python sentinela/vigiar.py
 
+      # 2) Publicar o ALERTA PRIMEIRO. Se isto falhar, o job para e a baseline NÃO é atualizada,
+      #    logo o run seguinte volta a detetar a mesma mudança. Nunca se absorve uma alteração em silêncio.
+      - name: Garantir etiqueta
+        if: ${{ hashFiles('sentinela/ALERTA.md') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh label create sentinela --color D93F0B --description "Fonte legal alterada ou inacessível" --force
+
+      - name: Abrir issue com o alerta
+        if: ${{ hashFiles('sentinela/ALERTA.md') != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Sentinela: fontes legais alteradas ($(date -u +%F))" \
+            --label sentinela \
+            --body-file sentinela/ALERTA.md
+
+      # 3) Só agora a nova baseline é guardada — depois de o alerta estar publicado.
       - name: Guardar snapshots atualizados
         run: |
           git config user.name "sentinela-bot"
@@ -30,13 +50,3 @@ jobs:
           git add sentinela/snapshots
           git diff --cached --quiet || git commit -m "sentinela: snapshots $(date -u +%F)"
           git push
-
-      - name: Abrir issue se houver alerta
-        if: ${{ hashFiles('sentinela/ALERTA.md') != '' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh issue create \
-            --title "Sentinela: fontes legais alteradas ($(date -u +%F))" \
-            --label "sentinela" \
-            --body-file sentinela/ALERTA.md

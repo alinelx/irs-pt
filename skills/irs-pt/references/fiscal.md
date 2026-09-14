@@ -7,7 +7,7 @@ Valores numéricos → `valores-anuais.md`. Aqui só a mecânica. Artigos refere
 | Natureza do rendimento | Coef. | Campo Q4A Anexo B | Sujeito à regra dos 15%? |
 |---|---|---|---|
 | Vendas de mercadorias e produtos (inclui comércio em 2.ª mão) | 0,15 | 401 | **Não** |
-| Prestações de serviços das atividades da tabela do art. 151.º (design, consultoria, programação, formação, etc.) | 0,75 | 403 | Sim |
+| Prestações de serviços das atividades da tabela do art. 151.º (Portaria n.º 1011/2001; ex.: 1336 Designers, 1332 Programadores, 1320 Consultores, 1334 Tradutores) | 0,75 | 403 | Sim |
 | Outras prestações de serviços (ex.: estafeta/entregas, serviços não listados) | 0,35 | 404 | Sim |
 | Propriedade intelectual/industrial, mineração de criptoativos | 0,95 | — | Não |
 
@@ -35,7 +35,7 @@ Consequências:
 ## Acumulação Cat. A + Cat. B
 - Englobamento obrigatório; taxas progressivas do art. 68.º sobre a soma. Adicional de solidariedade acima de 80.000 €.
 - Dedução específica da Cat. A (art. 25.º) é independente da Cat. B.
-- Retenção na fonte na Cat. B: dispensa se estimativa anual ≤ 15.000 € (art. 101.º-B).
+- Retenção na fonte na Cat. B (art. 101.º): 25% para atividades da tabela do 151.º, 11,5% para as restantes. Dispensa (art. 101.º-B) se a estimativa anual for **inferior ao limite do n.º 1 do art. 53.º CIVA** (15.000 € em 2025/26) — é o mesmo número, não são dois limites; menção obrigatória no recibo: «Sem retenção, nos termos do n.º 1 do artigo 101.º-B do Código do IRS».
 - Contabilidade organizada compensa quando as despesas reais ultrapassam a presunção do coeficiente (≈25% para serviços a 0,75). Custo típico de contabilista: ~150-200 €/mês (**estimativa de mercado, não oficial**).
 
 ## IVA — art. 53.º CIVA (DL n.º 35/2025, de 24 de março)
@@ -46,13 +46,19 @@ Consequências:
 - Bens em 2.ª mão: regime da margem (DL n.º 199/96) — tema de IVA, análise própria.
 
 ## Segurança Social (trabalhador independente)
-- Declaração trimestral; rendimento relevante = 70% serviços / 20% vendas; taxa 21,4%.
-- Isenção por acumulação com Cat. A se rendimento relevante mensal médio < 4×IAS **e** entidades distintas **e** Cat. A com proteção social equivalente **e** remuneração Cat. A ≥ 1 IAS. Acima, paga 21,4% só sobre o excedente.
-- Contribuições obrigatórias substituem a dedução específica no item 1 da regra dos 15% se forem superiores.
-- **A confirmar:** obrigatoriedade da declaração trimestral enquanto isento.
+Fonte: Guia Prático ISS n.º 1009 "Novo Regime dos Trabalhadores Independentes", v1.09, 12/01/2026 (valores de 2026, IAS 537,13 €). Base legal: Código dos Regimes Contributivos (Lei n.º 110/2009), DL n.º 2/2018.
+
+- **Rendimento relevante** (por trimestre): 70% das prestações de serviços; 20% das vendas de bens (e hotelaria/restauração). Não contam: mais-valias, propriedade intelectual, subsídios ao investimento (podem contar por opção).
+- **Base de incidência mensal** = rendimento relevante do trimestre ÷ 3. Mínimo 20 € de contribuição/mês; máximo 12×IAS (6.445,56 € em 2026). Contabilidade organizada: lucro tributável ÷ 12, mínimo 1,5×IAS, fixado em outubro.
+- **Taxas:** **21,4%** para trabalhadores independentes (prestação de serviços, profissionais livres); **25,2%** para empresários em nome individual com rendimentos de atividade **comercial e industrial** (e titulares de EIRL). → Quem acumula serviços com comércio (ex.: design + venda de bens) deve confirmar com a SS qual a taxa aplicada ao seu enquadramento.
+- **Isenção por acumulação com Cat. A:** isento das contribuições de TI se o rendimento relevante médio mensal (apurado trimestralmente) for **inferior a 4×IAS** (2.148,52 € em 2026) **e** as duas atividades forem para entidades distintas sem relação de grupo **e** o regime da Cat. A cubra todas as eventualidades **e** o salário médio mensal da Cat. A ≥ 1 IAS (537,13 €). Se num trimestre ultrapassar 4×IAS, paga 21,4% **só sobre o excedente** e tem de declarar no trimestre seguinte. A SS reconhece a isenção automaticamente para quem está no regime geral; caso contrário, Mod. RC 3001-DGSS.
+- **Declaração trimestral** (janeiro, abril, julho, outubro, até ao último dia): **dispensada** para quem está isento por acumulação nas condições acima (confirmado no guia — resolve a dúvida anterior). Entrega fora de prazo possível até ao mês anterior ao período seguinte. Declaração anual em janeiro (confirmar os 4 trimestres do ano anterior); acertos a pagar até 20 de fevereiro.
+- **Pagamento:** entre o dia 10 e 20 do mês seguinte. 1.º enquadramento produz efeitos no 1.º dia do 12.º mês após o início de atividade (pode antecipar-se na declaração trimestral).
+- **Interação com o IRS (art. 31.º n.º 13):** as contribuições obrigatórias substituem a dedução específica no item 1 da regra dos 15% quando superiores; quem está isento por acumulação tem 0 € de contribuições, logo usa a dedução específica.
 
 ## Pontos a confirmar com contabilista certificado
-1. Enquadramento exato de cada CAE do utilizador na tabela do 151.º (0,75 vs 0,35).
+1. Enquadramento de cada atividade na tabela do 151.º. **Design gráfico: código 1336 Designers está na tabela → 0,75 (confirmado).** Estafeta/entregas não está → 0,35 (por exclusão; confirmar).
 2. Dedução específica do ano corrente (depende do IAS e do OE).
 3. Interação regime da margem (2.ª mão) ↔ art. 53.º.
+5. Taxa SS aplicável a ENI com atividades mistas (serviços 21,4% vs comércio 25,2%) — o guia não trata o caso misto.
 4. Efeito de "afetação parcial" de despesas da habitação em futuras mais-valias.

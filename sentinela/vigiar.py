@@ -35,11 +35,27 @@ def extrair(html):
 def buscar(url):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "pt-PT,pt;q=0.9"})
     with urllib.request.urlopen(req, timeout=40) as r:
-        raw = r.read()
+        raw = r.read(); ctype = r.headers.get("Content-Type", "")
+    if "pdf" in ctype.lower() or url.lower().endswith(".pdf"):
+        return f"[PDF] {len(raw)} bytes sha256={hashlib.sha256(raw).hexdigest()}"
     for enc in ("utf-8", "cp1252", "latin-1"):
         try: return raw.decode(enc)
         except UnicodeDecodeError: continue
     return raw.decode("utf-8", "replace")
+
+def recortar(txt, inicio):
+    """Corta o chrome do portal: o texto passa a contar a partir da primeira linha que casa com `inicio`."""
+    if not inicio: return txt
+    m = re.search(r"^.*" + inicio + r".*$", txt, re.M)
+    return txt[m.start():] if m else txt
+
+def validar(f, txt):
+    """Devolve motivo de falha, ou None. Uma página que responde 200 mas não tem o conteúdo esperado é falha, não ok."""
+    if txt.startswith("[PDF]"): return None
+    if len(txt) < 1500: return f"página curta ({len(txt)} chars): chrome/cookies/JS-only?"
+    marc = f.get("marcador")
+    if marc and marc not in txt: return f"marcador '{marc}' ausente — conteúdo esperado não veio"
+    return None
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--init", action="store_true"); a = ap.parse_args()
@@ -49,11 +65,13 @@ def main():
     for f in fontes:
         fid, url = f["id"], f["url"]
         try:
-            novo = extrair(buscar(url))
+            bruto = buscar(url)
+            novo = bruto if bruto.startswith("[PDF]") else recortar(extrair(bruto), f.get("inicio"))
         except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError) as e:
             falhas.append((f, str(e))); continue
-        if len(novo) < 200:
-            falhas.append((f, f"página quase vazia ({len(novo)} chars) — JS-only ou bloqueio?")); continue
+        motivo = validar(f, novo)
+        if motivo:
+            falhas.append((f, motivo)); continue
         p = SNAP / f"{fid}.txt"
         if not p.exists():
             p.write_text(novo, encoding="utf-8"); novas.append(f); continue
