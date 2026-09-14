@@ -62,12 +62,12 @@ e mostra a conta. Se uma regra muda, muda no repo, nunca no código da UI.
 - Apresentar um valor de imposto como definitivo — a liquidação é da AT.
 - Substituir contabilista certificado.
 
-### Decisão em aberto: direção da geração
-A proposta de `CLAUDE.md` que veio do design queria o **JSON canónico** e o markdown gerado
-a partir dele. O repo faz o **inverso** — markdown canónico, `gerar_valores_json.py` deriva o
-JSON — porque é o markdown que carrega as notas, as fontes e as ressalvas que um humano edita
-e verifica. Fica assim até haver decisão em contrário; inverter implica mexer no gerador e nos
-testes de divergência.
+### Direção da geração: markdown canónico
+→ **[ADR-001](decisions/2026-09-14-direcao-da-geracao-valores-anuais.md)** (**Aceite**, 14/09/2026).
+O `valores-anuais.md` é a fonte; `scripts/gerar_valores_json.py` deriva o `.json`. **Nunca o
+inverso** — é o markdown que carrega as notas, as fontes e as ressalvas que um humano edita e
+verifica, e o JSON é uma projeção de 9 campos escalares por ano. A proposta que veio do design
+queria o contrário; foi ponderada e recusada, com os motivos no ADR.
 
 ## Estado (14/09/2026)
 - v0.1.0 instalada e exercitada; 35 testes, verificados por mutação.
