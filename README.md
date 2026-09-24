@@ -4,6 +4,8 @@ Assistente open source de IRS e e-Fatura para trabalhadores independentes em Por
 
 **Não é aconselhamento fiscal. Não submete nada no Portal das Finanças.** Explica, calcula e recomenda; a decisão e o clique são teus. Confirma com contabilista certificado.
 
+**Case study:** [bylx.dev/work/irs-pt](https://bylx.dev/work/irs-pt/) — porque a conta vem antes do portal.
+
 ## Porquê
 
 A pergunta que quase ninguém sabe responder: *"vale a pena afetar esta fatura à atividade?"*
